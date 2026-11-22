@@ -99,6 +99,20 @@ TryDoWildEncounter:
 	xor a
 	ret
 
+DisplayRepelExpiryFlow::
+	call GetStrongestRepelInBag
+	jr z, .noRepel
+	ld hl, RepelWoreOffText
+	call PrintText
+	call RepelReplacementPrompt
+	scf ; the Yes/No choice consumed the button press
+	ret
+.noRepel
+	ld hl, RepelWoreOffText
+	call PrintText
+	xor a ; no menu was shown, so let the expiry notice wait for dismissal
+	ret
+
 RepelReplacementPrompt::
 	call GetStrongestRepelInBag
 	ret z

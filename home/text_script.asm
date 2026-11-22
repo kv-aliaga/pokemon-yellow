@@ -212,11 +212,8 @@ PlayerBlackedOutText::
 	text_end
 
 DisplayRepelWoreOffText::
-	ld hl, RepelWoreOffText
-	call PrintText
-	; Keep the replacement question in the active text window. DisplayTextID
-	; closes the window after this handler returns.
-	farcall RepelReplacementPrompt
+	farcall DisplayRepelExpiryFlow
+	jp c, CloseTextDisplay ; the Yes/No input also dismisses both messages
 	jp AfterDisplayingTextID
 
 RepelWoreOffText::

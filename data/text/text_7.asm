@@ -24,12 +24,12 @@ _PlayerBlackedOutText::
 _RepelWoreOffText::
 	text "REPEL's effect"
 	line "wore off."
-	done
+	text_end
 
 _RepelAgainText::
 	text "Use another"
 	line "REPEL?"
-	done
+	text_end
 
 _PokemartBuyingGreetingText::
 	text "Take your time."
