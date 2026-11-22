@@ -78,14 +78,14 @@ OverworldLoopLessDelay::
 ; if START is pressed
 	xor a ; TEXT_START_MENU
 	ldh [hTextID], a
-	jp .displayDialogue
+	jr .displayDialogue
 .startButtonNotPressed
 	bit B_PAD_A, a
-	jp z, .checkIfDownButtonIsPressed
+	jr z, .checkIfDownButtonIsPressed
 ; if A is pressed
 	ld a, [wStatusFlags5]
 	bit BIT_UNKNOWN_5_2, a
-	jp nz, .noDirectionButtonsPressed
+	jr nz, .noDirectionButtonsPressed
 	call IsPlayerCharacterBeingControlledByGame
 	jr nz, .checkForOpponent
 	call CheckForHiddenEventOrBookshelfOrCardKeyDoor
@@ -285,7 +285,7 @@ OverworldLoopLessDelay::
 	set BIT_BATTLE_OVER_OR_BLACKOUT, [hl]
 	ld a, [wCurMap]
 	cp OAKS_LAB
-	jp z, .noFaintCheck ; no blacking out if the player lost to the rival in Oak's lab
+	jr z, .noFaintCheck ; no blacking out if the player lost to the rival in Oak's lab
 	callfar AnyPartyAlive
 	ld a, d
 	and a
@@ -990,7 +990,10 @@ LoadTileBlockMap::
 	ldh [hEastWestConnectedMapWidth], a
 	call LoadEastWestConnectionsTileMap
 .done
-	ret
+	; Apply the saved departure state before LoadCurrentMapView turns the
+	; source layout into visible tiles. Map scripts run too late to prevent a
+	; one-frame glimpse of the S.S. Anne on entry.
+	farjp VermilionDockPrepareMap
 
 LoadNorthSouthConnectionsTileMap::
 	ld c, MAP_BORDER
@@ -1662,7 +1665,7 @@ GetSimulatedInput::
 CollisionCheckOnWater::
 	ld a, [wStatusFlags5]
 	bit BIT_SCRIPTED_MOVEMENT_STATE, a
-	jp nz, .noCollision ; return and clear carry if button presses are being simulated
+	jr nz, .noCollision ; return and clear carry if button presses are being simulated
 	ld a, [wPlayerDirection] ; the direction that the player is trying to go in
 	ld d, a
 	ld a, [wSpritePlayerStateData1CollisionData]
