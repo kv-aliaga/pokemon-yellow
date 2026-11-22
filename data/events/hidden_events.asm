@@ -68,6 +68,7 @@ HiddenEventMaps:
 	hidden_event_map POKEMON_TOWER_5F
 	hidden_event_map MR_FUJIS_HOUSE
 	hidden_event_map VERMILION_CITY
+	hidden_event_map VERMILION_DOCK
 	hidden_event_map VERMILION_POKECENTER
 	hidden_event_map POKEMON_FAN_CLUB
 	hidden_event_map VERMILION_GYM
@@ -415,6 +416,14 @@ DEF ANY_FACING EQU $d0
 
 	hidden_events_for VERMILION_CITY
 	hidden_event 14, 11, HiddenItems, MAX_ETHER
+	db -1 ; end
+
+	hidden_events_for VERMILION_DOCK
+	; Upper truck cells accept an adjacent approach; front row only accepts north.
+	hidden_event 20,  0, VermilionDockTruckHiddenEvent, 0
+	hidden_event 21,  0, VermilionDockTruckHiddenEvent, 0
+	hidden_event 20,  1, VermilionDockTruckHiddenEvent, SPRITE_FACING_UP
+	hidden_event 21,  1, VermilionDockTruckHiddenEvent, SPRITE_FACING_UP
 	db -1 ; end
 
 	hidden_events_for VERMILION_POKECENTER

@@ -405,7 +405,4 @@ ENDM
 	const TOGGLE_DAISY_SITTING_COPY            ; ED
 	const TOGGLE_DAISY_WALKING_COPY            ; EE
 	const TOGGLE_TOWN_MAP_COPY                 ; EF
-	toggle_consts_for VERMILION_DOCK
-	const TOGGLE_VERMILION_DOCK_MEW            ; F0
-
 DEF NUM_TOGGLEABLE_OBJECTS EQU const_value

@@ -147,11 +147,9 @@ HallOfFameRearmUncaughtLegendaries:
 .mewtwoOwned
 	ld a, MEW
 	call HallOfFameCheckOwned
-	ret nz
+	jr nz, .mewOwned
 	ResetEvent EVENT_BEAT_MEW
-	ld a, TOGGLE_VERMILION_DOCK_MEW
-	ld [wToggleableObjectIndex], a
-	predef ShowObject
+.mewOwned
 	ret
 
 HallOfFameCheckOwned:
