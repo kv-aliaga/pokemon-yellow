@@ -9,8 +9,9 @@ VermilionDock_Object:
 	warp_event 14,  2, SS_ANNE_1F, 2
 
 	def_bg_events
+	bg_event 21,  1, TEXT_VERMILIONDOCK_TRUCK
 
 	def_object_events
-	object_event 21,  2, SPRITE_MONSTER, STAY, DOWN, TEXT_VERMILIONDOCK_MEW, MEW, 1
+	object_event 21,  1, SPRITE_NONE, STAY, DOWN, TEXT_VERMILIONDOCK_MEW, MEW, 1
 
 	def_warps_to VERMILION_DOCK

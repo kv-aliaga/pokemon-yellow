@@ -44,7 +44,7 @@ The three city trades use level 25, consistent with the pre-Koga trainer progres
 
 Articuno, Zapdos, Moltres, and Mewtwo keep their existing fixed levels and locations. After a complete Elite Four victory, each defeated encounter is re-enabled only when its Pokédex entry is still unowned. Mew follows the same capture check and reactivation rule, and its level is recalculated from the party as `min(100, highest party level + 5)`.
 
-The Vermilion Dock map already draws the truck using block 3 at block coordinate (10, 0). The Mew object is placed at map coordinate (21, 2), the reachable ground immediately below the truck, using the existing Mew sprite. It is available as soon as the player can reach the dock and has no League prerequisite.
+The Vermilion Dock map already draws the truck using block 3 at block coordinate (10, 0). Mew has no visible overworld sprite: a `bg_event` on the truck at map coordinate (21, 1) runs the encounter script, which uses a hidden `SPRITE_NONE` trainer object at the same coordinate. The player can stand on the reachable ground at (21, 2) and interact with the truck to show the Mew encounter message and start the battle. It is available as soon as the player can reach the dock and has no League prerequisite.
 
 ## Verification record
 
@@ -54,7 +54,7 @@ The Vermilion Dock map already draws the truck using block 3 at block coordinate
 - The official RGBDS v1.0.4 Linux toolchain was unpacked under `/tmp` and used to build both `pokeyellow.gbc` and `pokeyellow_debug.gbc` successfully. Assembly caught and led to fixes for packed trainer-event bit positions, toggle-object table alignment, and table-width placement.
 - No emulator or test harness is installed in the environment, so in-game event behavior has not been exercised.
 
-The card's verification status remains pending until gameplay verification is available. Mew is positioned beneath the truck already drawn in the Vermilion Dock map; gameplay interaction still needs manual verification in an emulator.
+The card's verification status remains pending until gameplay verification is available. The invisible Mew trigger is attached to the truck already drawn in the Vermilion Dock map; gameplay interaction still needs manual verification in an emulator.
 
 ## Manual acceptance checklist (not executed)
 
@@ -65,4 +65,4 @@ These steps are for a later emulator or hardware run. They are test instructions
 3. **Ditto:** defeat Giovanni, enter Rocket Hideout B4F, and interact with Ditto. Confirm it is absent before Giovanni, appears once afterward, and does not return after capture or defeat until the specified reactivation rule applies (Ditto has no reactivation requirement in this plan).
 4. **Museum and fossils:** on separate saves, choose Helix and Dome in Mt. Moon; after Lt. Surge, rematch the Museum Super Nerd and verify the opposing Omanyte/Kabuto choice and opposite fossil reward. Fill the bag before the reward to verify retry behavior. Hand each fossil to Pewter and retrieve the revived level-30 Pokémon there; repeat the handoff and retrieval across Pewter/Cinnabar. Verify Old Amber revival at Pewter only after Cut and confirm Cinnabar remains functional.
 5. **Four original legendaries:** for Articuno, Zapdos, Moltres, and Mewtwo, test separate saves where each is defeated without capture and where it is captured. Confirm defeat removes it, partial League progress/loss does not restore it, a complete Elite Four victory restores only unowned species, and captured species stay absent.
-6. **Mew:** reach Vermilion Dock before the Elite Four and interact with Mew under the existing truck. Start the encounter with a low-level party and with a highest-level party above 95, and confirm the level is `highest + 5` then capped at 100. Test capture versus defeat, no reappearance before a complete Elite Four victory after defeat, and reappearance afterward only when unowned.
+6. **Mew:** reach Vermilion Dock before the Elite Four. Confirm no Mew sprite is visible, then stand directly below and interact with the truck; verify the encounter message appears and starts the battle. Test a low-level party and a highest-level party above 95, confirming the level is `highest + 5` then capped at 100. Test capture versus defeat, no reappearance before a complete Elite Four victory after defeat, and reappearance afterward only when unowned.

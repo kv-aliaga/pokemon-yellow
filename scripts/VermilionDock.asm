@@ -219,14 +219,13 @@ VermilionDock_EraseSSAnne:
 VermilionDock_TextPointers:
 	def_text_pointers
 	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_MEW
-	dw_const VermilionDockUnusedText, TEXT_VERMILIONDOCK_UNUSED
-
-VermilionDockUnusedText:
-	text_far _VermilionDockUnusedText
-	text_end
+	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_TRUCK
 
 VermilionDockMewText:
 	text_asm
+	; The truck's background event starts the encounter using the hidden trainer object.
+	ld a, VERMILIONDOCK_MEW
+	ld [wSpriteIndex], a
 	ld a, [wPartyCount]
 	and a
 	jr z, .noParty

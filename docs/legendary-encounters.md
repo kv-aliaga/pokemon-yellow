@@ -29,10 +29,10 @@ As cinco intenções estão ligadas por espécie a [`encounters/acquisition.json
 ## Notas de implementação e compatibilidade
 
 - Os quatro lendários originais são encontros estáticos de mapa com flags individuais. A implementação V1 reativa cada um após vitória completa quando não está marcado como capturado no Pokédex.
-- A lógica de Mew e a fórmula de nível estão implementadas no cais de Vermilion. O caminhão já está desenhado no bloco 3 do mapa `VermilionDock`; o objeto de Mew fica na posição (21, 2), acessível logo abaixo dele.
+- A lógica de Mew e a fórmula de nível estão implementadas no cais de Vermilion. O caminhão já está desenhado no bloco 3 do mapa `VermilionDock`; Mew não tem sprite visível no mapa. Um `bg_event` no caminhão (21, 1) inicia o encontro usando um objeto treinador invisível (`SPRITE_NONE`) na mesma posição. A casa acessível (21, 2) logo abaixo é o ponto de interação: interagir com o caminhão mostra a mensagem do encontro e inicia a batalha.
 - A vitória sobre a Elite dos Quatro rearma os encontros não capturados no script de conclusão completa, não ao entrar na Liga nem ao perder uma batalha.
 - A regra depende de permitir novas vitórias completas sobre a Elite dos Quatro depois da primeira conclusão.
 
 ## Resolução do catálogo
 
-O plano aprova o reaparecimento das quatro aves e de Mewtwo quando ainda não tiverem sido capturados e o jogador vencer a Elite dos Quatro. Mew fica aprovado como encontro especial sob o caminhão sempre que o jogador puder alcançá-lo fisicamente, sem bloqueio de Liga. Seu nível é `min(100, maior nível da party + 5)`, recalculado a cada encontro. As regras de captura, reaparecimento e nível estão implementadas, e o objeto do encontro foi colocado sob o caminhão já existente no mapa.
+O plano aprova o reaparecimento das quatro aves e de Mewtwo quando ainda não tiverem sido capturados e o jogador vencer a Elite dos Quatro. Mew fica aprovado como encontro especial sob o caminhão sempre que o jogador puder alcançá-lo fisicamente, sem bloqueio de Liga e sem sprite visível no mapa. O jogador interage com o caminhão para exibir a mensagem do encontro e iniciar a batalha. Seu nível é `min(100, maior nível da party + 5)`, recalculado a cada encontro. As regras de captura, reaparecimento e nível estão implementadas; o evento de fundo está posicionado sobre o caminhão no mapa, e o objeto treinador de apoio é invisível.
