@@ -15,6 +15,7 @@
 
 - Consult `INSTALL.md` for the supported toolchain and `Makefile` for build targets. If a build tool is missing, check executable resolution (including `rgbasm`, `rgbfix`, `rgbgfx`, and `rgblink`) and follow the documented installation path before concluding the build is blocked.
 - Report the exact build target and whether each requested ROM completed. Distinguish source inspection and static checks from assembly/link success and from emulator or hardware tests; a successful build does not prove runtime behavior.
+- Leave SameBoy ROM testing to the human. Provide reproducible in-game steps for the human to verify behavior that the agent cannot test in SameBoy.
 - For map or event changes, record reproducible in-game steps for behavior that could not be tested in an emulator or on hardware.
 
 ## Read on demand
