@@ -2078,6 +2078,9 @@ RodResponse:
 
 	dec a ; is there a bite?
 	jr nz, DoNotGenerateFishingEncounter
+	ld a, [wRepelRemainingSteps]
+	and a
+	jr nz, .repelNoBite
 	; if yes, store level and species data
 	ld a, 1
 	ld [wMoveMissed], a
@@ -2085,6 +2088,10 @@ RodResponse:
 	ld [wCurEnemyLevel], a
 	ld a, c ; species
 	ld [wCurOpponent], a
+	jr DoNotGenerateFishingEncounter
+.repelNoBite
+	xor a
+	ld [wRodResponse], a
 
 DoNotGenerateFishingEncounter:
 	ld hl, wWalkBikeSurfState

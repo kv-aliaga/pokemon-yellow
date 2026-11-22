@@ -79,12 +79,7 @@ TryDoWildEncounter:
 	ld [wEnemyMonSpecies2], a
 	ld a, [wRepelRemainingSteps]
 	and a
-	jr z, .willEncounter
-	ld a, [wPartyMon1Level]
-	ld b, a
-	ld a, [wCurEnemyLevel]
-	cp b
-	jr c, .CantEncounter2 ; repel prevents encounters if the leading party mon's level is higher than the wild mon
+	jr nz, .CantEncounter2 ; an active Repel blocks every wild encounter, regardless of level
 	jr .willEncounter
 .lastRepelStep
 	; $ff is outside the valid Repel duration range; NewBattle handles the UI.
