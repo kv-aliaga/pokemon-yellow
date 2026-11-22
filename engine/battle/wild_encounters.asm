@@ -162,4 +162,8 @@ RepelReplacementPrompt::
 	farcall RemoveItemByID
 	ret
 
+RepelAgainText::
+	text_far _RepelAgainText
+	text_end
+
 INCLUDE "data/wild/probabilities.asm"
