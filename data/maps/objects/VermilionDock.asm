@@ -1,6 +1,3 @@
-	object_const_def
-	const_export VERMILIONDOCK_MEW
-
 VermilionDock_Object:
 	db $f ; border block
 
@@ -11,6 +8,5 @@ VermilionDock_Object:
 	def_bg_events
 
 	def_object_events
-	object_event 21,  2, SPRITE_MONSTER, STAY, DOWN, TEXT_VERMILIONDOCK_MEW, MEW, 1
 
 	def_warps_to VERMILION_DOCK

@@ -95,7 +95,7 @@ O nível pode mudar conforme a solução escolhida. Por exemplo, uma missão em 
 - Criar a campanha pós-Liga.
 - Liberar rematches de ginásio após vencer a Elite dos 4.
 - Completar as missões opcionais planejadas para o pós-jogo.
-- Tornar os 151 Pokémon originais obtíveis no jogo; decidir se a conclusão exige ou dispensa trocas.
+- Tornar os 151 Pokémon originais obtíveis em um único save, sem depender de trocas externas com outro jogo ou jogador. Trocas com NPCs dentro do jogo podem ser usadas como método de obtenção.
 - Implementar a melhoria de bolsa acordada, dimensionando-a conforme a solução de interface escolhida.
 - Continuar a correção de bugs priorizados.
 
@@ -118,7 +118,7 @@ Estas decisões não retiram itens do escopo; elas definem a implementação:
 
 1. **Sprites de espécies posteriores:** é aceitável adaptar sprites de jogos oficiais ou a restrição também proíbe importar/adaptar sprites que ainda não estão em Yellow?
 2. **Pokémon pós-geração I:** quais evoluções posteriores entram na meta final e quais lendários, se algum, serão capturáveis?
-3. **Conclusão dos 151:** a coleção completa precisa ser possível em um único save sem trocas externas?
+3. **Métodos de obtenção dos 151:** quais espécies entram por encontros, presentes, trocas com NPCs ou prêmios, mantendo a conclusão possível sem trocas externas?
 4. **Pós-Liga:** qual é a premissa narrativa e que papel Ho-Oh, Lugia ou Celebi teriam?
 5. **Bolsa:** qual melhoria concreta é desejada: organização visual, categorias, capacidade, acesso a itens-chave ou outra?
 6. **Dificuldade:** qual perfil desejado — mais estratégica, mais difícil em geral ou configurável?

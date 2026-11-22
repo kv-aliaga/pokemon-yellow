@@ -482,17 +482,12 @@ ItemUseBall:
 
 	push hl
 
-; Bug: If the Pokémon is transformed, the Pokémon is assumed to be a Ditto.
-; This is a bug because a wild Pokémon could have used Transform via
-; Mirror Move even though the only wild Pokémon that knows Transform is Ditto.
+; wEnemyMonSpecies2 keeps the original species when Transform changes
+; wEnemyMonSpecies. Catch the original species, which may be Mew or Ditto.
 	ld hl, wEnemyBattleStatus3
 	bit TRANSFORMED, [hl]
-	jr z, .notTransformed
-	ld a, DITTO
-	ld [wEnemyMonSpecies2], a
-	jr .skip6
+	jr nz, .skip6
 
-.notTransformed
 ; If the Pokémon is not transformed, set the transformed bit and copy the
 ; DVs to wTransformedEnemyMonOriginalDVs so that LoadEnemyMonData won't generate
 ; new DVs.
