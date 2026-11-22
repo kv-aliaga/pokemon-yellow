@@ -29,7 +29,7 @@ As cinco intenções estão ligadas por espécie a [`encounters/acquisition.json
 ## Notas de implementação e compatibilidade
 
 - Os quatro lendários originais são encontros estáticos de mapa com flags individuais. A implementação V1 reativa cada um após vitória completa quando não está marcado como capturado no Pokédex.
-- A lógica de Mew e a fórmula de nível estão implementadas no cais de Vermilion. O caminhão já está desenhado no bloco 3 do mapa `VermilionDock`; Mew não tem sprite visível no mapa. Um `bg_event` no caminhão (21, 1) inicia o encontro usando um objeto treinador invisível (`SPRITE_NONE`) na mesma posição. A casa acessível (21, 2) logo abaixo é o ponto de interação: interagir com o caminhão mostra a mensagem do encontro e inicia a batalha.
+- A lógica de Mew e a fórmula de nível estão implementadas no cais de Vermilion. O caminhão já está desenhado no bloco 3 do mapa `VermilionDock`; Mew não tem sprite visível no mapa. Dois `bg_event`s cobrem a linha inferior do caminhão (20, 1) e (21, 1) e iniciam o encontro usando um objeto treinador invisível (`SPRITE_NONE`). As casas acessíveis (20, 2) e (21, 2) logo abaixo são os pontos de interação: de frente para o norte, o jogador interage com o caminhão e inicia a batalha após a mensagem.
 - A vitória sobre a Elite dos Quatro rearma os encontros não capturados no script de conclusão completa, não ao entrar na Liga nem ao perder uma batalha.
 - A regra depende de permitir novas vitórias completas sobre a Elite dos Quatro depois da primeira conclusão.
 

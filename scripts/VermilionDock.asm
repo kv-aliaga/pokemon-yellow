@@ -219,7 +219,8 @@ VermilionDock_EraseSSAnne:
 VermilionDock_TextPointers:
 	def_text_pointers
 	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_MEW
-	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_TRUCK
+	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_TRUCK_LEFT
+	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_TRUCK_RIGHT
 
 VermilionDockMewText:
 	text_asm

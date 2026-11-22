@@ -44,7 +44,7 @@ The three city trades use level 25, consistent with the pre-Koga trainer progres
 
 Articuno, Zapdos, Moltres, and Mewtwo keep their existing fixed levels and locations. After a complete Elite Four victory, each defeated encounter is re-enabled only when its Pokédex entry is still unowned. Mew follows the same capture check and reactivation rule, and its level is recalculated from the party as `min(100, highest party level + 5)`.
 
-The Vermilion Dock map already draws the truck using block 3 at block coordinate (10, 0). Mew has no visible overworld sprite: a `bg_event` on the truck at map coordinate (21, 1) runs the encounter script, which uses a hidden `SPRITE_NONE` trainer object at the same coordinate. The player can stand on the reachable ground at (21, 2) and interact with the truck to show the Mew encounter message and start the battle. It is available as soon as the player can reach the dock and has no League prerequisite.
+The Vermilion Dock map already draws the truck using block 3 at block coordinate (10, 0). Mew has no visible overworld sprite: two `bg_event`s cover the truck's lower row at map coordinates (20, 1) and (21, 1), each running the encounter script backed by a hidden `SPRITE_NONE` trainer object. The player can stand on the reachable ground at (20, 2) or (21, 2), face north, and interact with the truck to show the Mew encounter message and start the battle. It is available as soon as the player can reach the dock and has no League prerequisite.
 
 ## Verification record
 
