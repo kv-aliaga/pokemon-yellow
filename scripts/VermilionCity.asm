@@ -54,6 +54,10 @@ VermilionCity_ScriptPointers:
 	dw_const VermilionCityPlayerAllowedToPassScript, SCRIPT_VERMILIONCITY_PLAYER_ALLOWED_TO_PASS
 
 VermilionCityDefaultScript:
+	; The ticket guard only blocks the dock entrance while the ship is present.
+	; After departure, let the player walk onto either city-to-dock warp.
+	CheckEvent EVENT_SS_ANNE_LEFT
+	ret nz
 	ld a, [wSpritePlayerStateData1FacingDirection]
 	and a ; cp SPRITE_FACING_DOWN
 	jr nz, .return
@@ -66,14 +70,11 @@ VermilionCityDefaultScript:
 	ld a, TEXT_VERMILIONCITY_SAILOR1
 	ldh [hTextID], a
 	call DisplayTextID
-	CheckEvent EVENT_SS_ANNE_LEFT
-	jr nz, .ship_departed
 	ld b, S_S_TICKET
 	predef GetQuantityOfItemInBag
 	ld a, b
 	and a
 	ret nz
-.ship_departed
 	ld a, PAD_UP
 	ld [wSimulatedJoypadStatesEnd], a
 	ld a, $1

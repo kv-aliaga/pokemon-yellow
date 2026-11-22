@@ -1,5 +1,9 @@
 VermilionDock_Script:
 	call EnableAutoTextBoxDrawing
+	ld hl, wCurrentMapScriptFlags
+	bit BIT_CUR_MAP_LOADED_1, [hl]
+	res BIT_CUR_MAP_LOADED_1, [hl]
+	call nz, VermilionDockMapLoaded
 	CheckEventHL EVENT_STARTED_WALKING_OUT_OF_DOCK
 	jr nz, .walking_out_of_dock
 	CheckEventReuseHL EVENT_GOT_HM01
@@ -19,20 +23,8 @@ VermilionDock_Script:
 	jp z, VermilionDockSSAnneLeavesScript
 	SetEventReuseHL EVENT_STARTED_WALKING_OUT_OF_DOCK
 	call Delay3
-	ld hl, wStatusFlags5
-	set BIT_SCRIPTED_MOVEMENT_STATE, [hl]
-	ld hl, wSimulatedJoypadStatesEnd
-	ld a, PAD_UP
-	ld [hli], a
-	ld [hli], a
-	ld [hl], a
-	ld a, $3
-	ld [wSimulatedJoypadStatesIndex], a
-	xor a
-	ld [wSpritePlayerStateData2MovementByte1], a
-	ld [wOverrideSimulatedJoypadStatesMask], a
-	dec a
-	ld [wJoyIgnore], a
+	ld a, 3
+	call VermilionDockSimulateNorthwardMovement
 	ret
 
 .walking_out_of_dock
@@ -43,6 +35,56 @@ VermilionDock_Script:
 	ret nz
 	ld [wJoyIgnore], a
 	SetEventReuseHL EVENT_WALKED_OUT_OF_DOCK
+	ret
+
+VermilionDockMapLoaded:
+	; The block loader has already cleared the ship before the map is drawn.
+	; Remove the ship warp and handle the one-time re-entry movement.
+	CheckEvent EVENT_SS_ANNE_LEFT
+	ret z
+	ld hl, wNumberOfWarps
+	dec [hl]
+	ld a, [wDestinationWarpID]
+	cp $1 ; re-entry from either Vermilion City entrance
+	ret nz
+	CheckEvent EVENT_STARTED_WALKING_OUT_OF_DOCK
+	ret z
+	CheckEvent EVENT_WALKED_OUT_OF_DOCK
+	ret z
+	; The city warp lands on water after the ship is cleared. Step north onto
+	; the passable dock tile, without repeating the one-time walk-out to the city.
+	call Delay3
+	ld a, 1
+	call VermilionDockSimulateNorthwardMovement
+	ret
+
+VermilionDockPrepareMap::
+	ld a, [wCurMap]
+	cp VERMILION_DOCK
+	ret nz
+	CheckEvent EVENT_SS_ANNE_LEFT
+	ret z
+	jp VermilionDockClearShipBlocks
+
+; Queue a northward movement sequence with the number of steps in a.
+VermilionDockSimulateNorthwardMovement:
+	ld c, a
+	ld hl, wStatusFlags5
+	set BIT_SCRIPTED_MOVEMENT_STATE, [hl]
+	ld hl, wSimulatedJoypadStatesEnd
+	ld a, PAD_UP
+	ld b, c
+.queueStep
+	ld [hli], a
+	dec b
+	jr nz, .queueStep
+	ld a, c
+	ld [wSimulatedJoypadStatesIndex], a
+	xor a
+	ld [wSpritePlayerStateData2MovementByte1], a
+	ld [wOverrideSimulatedJoypadStatesMask], a
+	dec a
+	ld [wJoyIgnore], a
 	ret
 
 VermilionDockSSAnneLeavesScript:
@@ -116,6 +158,10 @@ VermilionDockSSAnneLeavesScript:
 	ldh [rWY], a
 	ldh [hWY], a
 	call VermilionDock_EraseSSAnne
+	ld a, SFX_SS_ANNE_HORN
+	call PlaySound
+	ld c, 120
+	call DelayFrames
 	ld a, $90
 	ldh [hWY], a
 	ld a, $1
@@ -126,6 +172,7 @@ VermilionDockSSAnneLeavesScript:
 	dec hl
 	ld [hl], c
 	call LoadPlayerSpriteGraphics
+	farcall RedrawMapView
 	ld hl, wNumberOfWarps
 	dec [hl]
 	ret
@@ -188,33 +235,26 @@ VermilionDock_SyncScrollWithLY:
 	jr z, .wait_for_ly_match
 	ret
 
-VermilionDock_EraseSSAnne:
-; Fill the area the S.S. Anne occupies in BG map 0 with water tiles.
-	ld hl, wVermilionDockTileMapBuffer
-	ld bc, wVermilionDockTileMapBufferEnd - wVermilionDockTileMapBuffer
-	ld a, $14 ; water tile
-	call FillMemory
-	hlbgcoord 0, 10
-	ld de, wVermilionDockTileMapBuffer
-	lb bc, BANK(wVermilionDockTileMapBuffer), 12
-	call CopyVideoData
-
-; Replace the blocks of the lower half of the ship with water blocks. This
-; leaves the upper half alone, but that doesn't matter because replacing any of
-; the blocks is unnecessary because the blocks the ship occupies are south of
-; the player and won't be redrawn when the player automatically walks north and
-; exits the map. This code could be removed without affecting anything.
+VermilionDockClearShipBlocks::
+; Replace the ship's full block footprint so later map scrolling cannot redraw
+; either half from the source layout.
+	hlowcoord 5, 1, VERMILION_DOCK_WIDTH
+	ld a, $d ; water block
+	ld [hli], a
+	ld [hli], a
+	ld [hli], a
+	ld [hl], a
 	hlowcoord 5, 2, VERMILION_DOCK_WIDTH
 	ld a, $d ; water block
 	ld [hli], a
 	ld [hli], a
 	ld [hli], a
 	ld [hl], a
+	ret
 
-	ld a, SFX_SS_ANNE_HORN
-	call PlaySound
-	ld c, 120
-	call DelayFrames
+VermilionDock_EraseSSAnne:
+; Update the live map; the caller redraws it after restoring the VRAM pointer.
+	call VermilionDockClearShipBlocks
 	ret
 
 VermilionDock_TextPointers:
