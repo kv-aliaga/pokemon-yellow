@@ -20,7 +20,6 @@ NewBattle::
 	ldh [hTextID], a
 	call EnableAutoTextBoxDrawing
 	call DisplayTextID
-	farcall RepelReplacementPrompt
 .done
 	pop af
 	ret
