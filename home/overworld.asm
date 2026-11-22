@@ -194,7 +194,7 @@ OverworldLoopLessDelay::
 	ld [wCheckFor180DegreeTurn], a
 	ld a, [wPlayerDirection]
 	ld [wPlayerMovingDirection], a
-	call NewBattle
+	callfar NewBattle
 	jp c, .battleOccurred
 	jp OverworldLoop
 
@@ -262,7 +262,7 @@ OverworldLoopLessDelay::
 	and a
 	jp nz, HandleBlackOut ; if all pokemon fainted
 .newBattle
-	call NewBattle
+	callfar NewBattle
 	ld hl, wMovementFlags
 	res BIT_STANDING_ON_WARP, [hl]
 	jp nc, CheckWarpsNoCollision ; check for warps if there was no battle
@@ -318,22 +318,6 @@ AllPokemonFainted::
 	ld [wIsInBattle], a
 	call RunMapScript
 	jp HandleBlackOut
-
-; function to determine if there will be a battle and execute it (either a trainer battle or wild battle)
-; sets carry if a battle occurred and unsets carry if not
-NewBattle::
-	ld a, [wStatusFlags3]
-	bit BIT_ON_DUNGEON_WARP, a
-	jr nz, .noBattle
-	call IsPlayerCharacterBeingControlledByGame
-	jr nz, .noBattle ; no battle if the player character is under the game's control
-	ld a, [wStatusFlags4]
-	bit BIT_NO_BATTLES, a
-	jr nz, .noBattle
-	farjp InitBattle
-.noBattle
-	and a
-	ret
 
 ; function to make bikes twice as fast as walking
 DoBikeSpeedup::

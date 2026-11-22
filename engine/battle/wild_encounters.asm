@@ -87,12 +87,9 @@ TryDoWildEncounter:
 	jr c, .CantEncounter2 ; repel prevents encounters if the leading party mon's level is higher than the wild mon
 	jr .willEncounter
 .lastRepelStep
+	; $ff is outside the valid Repel duration range; NewBattle handles the UI.
+	ld a, $ff
 	ld [wRepelRemainingSteps], a
-	ld a, TEXT_REPEL_WORE_OFF
-	ldh [hTextID], a
-	call EnableAutoTextBoxDrawing
-	call DisplayTextID
-	call RepelReplacementPrompt
 	jr .CantEncounter2
 .CantEncounter2
 	ld a, $1
