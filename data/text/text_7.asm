@@ -26,6 +26,11 @@ _RepelWoreOffText::
 	line "wore off."
 	done
 
+_RepelAgainText::
+	text "Use another"
+	line "REPEL?"
+	done
+
 _PokemartBuyingGreetingText::
 	text "Take your time."
 	done
