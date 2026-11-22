@@ -299,6 +299,7 @@ RocketHideoutB4F_TextPointers:
 	dw_const PickUpItemText,                              TEXT_ROCKETHIDEOUTB4F_IRON
 	dw_const PickUpItemText,                              TEXT_ROCKETHIDEOUTB4F_SILPH_SCOPE
 	dw_const PickUpItemText,                              TEXT_ROCKETHIDEOUTB4F_LIFT_KEY
+	dw_const RocketHideoutB4FDittoText,                  TEXT_ROCKETHIDEOUTB4F_DITTO
 	dw_const RocketHideoutB4FGiovanniHopeWeMeetAgainText, TEXT_ROCKETHIDEOUTB4F_GIOVANNI_HOPE_WE_MEET_AGAIN
 	dw_const RocketHideoutB4FText11,                      TEXT_ROCKETHIDEOUTB4F_TEXT11
 	dw_const RocketHideoutB4FText12,                      TEXT_ROCKETHIDEOUTB4F_TEXT12
@@ -413,3 +414,34 @@ RocketHideoutB4FRocketAfterBattleText:
 .Text:
 	text_far _RocketHideoutB4FRocketAfterBattleText
 	text_end
+
+RocketHideoutB4FDittoText:
+	text_asm
+	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_GIOVANNI
+	jr nz, .afterGiovanni
+	ld hl, .GiovanniStillHereText
+	call PrintText
+	jp TextScriptEnd
+.afterGiovanni
+	ld hl, DittoTrainerHeader
+	call TalkToTrainer
+	jp TextScriptEnd
+
+.GiovanniStillHereText:
+	text "A strange POKéMON is"
+	line "waiting for Giovanni."
+	prompt
+	text_end
+
+DittoTrainerHeader:
+	trainer EVENT_BEAT_ROCKET_HIDEOUT_DITTO, 0, DittoBattleText, DittoBattleText, DittoBattleText
+	db -1
+
+DittoBattleText:
+	text "The POKéMON watches"
+	line "you closely!@"
+	text_asm
+	ld a, DITTO
+	call PlayCry
+	call WaitForSoundToFinish
+	jp TextScriptEnd

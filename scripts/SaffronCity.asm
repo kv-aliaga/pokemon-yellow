@@ -17,7 +17,7 @@ SaffronCity_TextPointers:
 	dw_const SaffronCityPidgeotText,                  TEXT_SAFFRONCITY_PIDGEOT
 	dw_const SaffronCityRockerText,                   TEXT_SAFFRONCITY_ROCKER
 	dw_const SaffronCityRocket8Text,                  TEXT_SAFFRONCITY_ROCKET8
-	dw_const SaffronCityRocket9Text,                  TEXT_SAFFRONCITY_ROCKET9
+	dw_const SaffronCityTradeNPCText,                 TEXT_SAFFRONCITY_TRADE_NPC
 	dw_const SaffronCitySignText,                     TEXT_SAFFRONCITY_SIGN
 	dw_const SaffronCityFightingDojoSignText,         TEXT_SAFFRONCITY_FIGHTING_DOJO_SIGN
 	dw_const SaffronCityGymSignText,                  TEXT_SAFFRONCITY_GYM_SIGN
@@ -28,6 +28,7 @@ SaffronCity_TextPointers:
 	dw_const PokeCenterSignText,                      TEXT_SAFFRONCITY_POKECENTER_SIGN
 	dw_const SaffronCityMrPsychicsHouseSignText,      TEXT_SAFFRONCITY_MR_PSYCHICS_HOUSE_SIGN
 	dw_const SaffronCitySilphCoLatestProductSignText, TEXT_SAFFRONCITY_SILPH_CO_LATEST_PRODUCT_SIGN
+
 
 SaffronCityRocket1Text:
 	text_far _SaffronCityRocket1Text
@@ -121,3 +122,10 @@ SaffronCityMrPsychicsHouseSignText:
 SaffronCitySilphCoLatestProductSignText:
 	text_far _SaffronCitySilphCoLatestProductSignText
 	text_end
+
+SaffronCityTradeNPCText:
+	text_asm
+	ld a, TRADE_FOR_GRAVELER_KADABRA
+	ld [wWhichTrade], a
+	predef DoInGameTradeDialogue
+	jp TextScriptEnd

@@ -790,6 +790,16 @@ DEF INDIGO_PLATEAU_EVENTS_END EQU const_value - 1
 	const_skip 8
 	const EVENT_BEAT_ARTICUNO
 
+
+; V1 encounter and acquisition events
+const_next $9E1
+const EVENT_BEAT_MEW
+const_next $9E2
+const EVENT_BEAT_MUSEUM_SUPER_NERD_REMATCH
+const EVENT_GOT_MUSEUM_FOSSIL_REWARD
+const_next $9E5
+const EVENT_BEAT_ROCKET_HIDEOUT_DITTO
+
 ; End of events
 	const_next $A00
 DEF NUM_EVENTS EQU const_value

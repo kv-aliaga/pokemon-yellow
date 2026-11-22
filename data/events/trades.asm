@@ -25,4 +25,14 @@ TradeMons:
 	npctrade GOLDUCK,    RHYDON,   TRADE_DIALOGSET_EVOLUTION, "BUFFY"   ; used in CINNABAR_LAB_TRADE_ROOM
 	npctrade GROWLITHE,  DEWGONG,  TRADE_DIALOGSET_HAPPY,     "CEZANNE" ; used in CINNABAR_LAB_TRADE_ROOM
 	npctrade CUBONE,     MACHOKE,  TRADE_DIALOGSET_HAPPY,     "RICKY"   ; used in UNDERGROUND_PATH_ROUTE_5
+	npctrade MACHOKE,    HAUNTER,  TRADE_DIALOGSET_HAPPY,     "SHADE"   ; Lavender Town
+	npctrade GRAVELER,   KADABRA,  TRADE_DIALOGSET_HAPPY,     "ORACLE"  ; Saffron City
+	npctrade KADABRA,    MACHOKE,  TRADE_DIALOGSET_HAPPY,     "ATLAS"   ; Celadon City
+	npctrade HAUNTER,    GRAVELER, TRADE_DIALOGSET_HAPPY,     "GRANITE" ; Diglett's Cave
+	assert_table_length NUM_NPC_TRADES
+
+TradeMonReceivedLevels:
+	table_width 1
+	db 0, 0, 0, 0, 0, 0, 0, 0, 0, 0
+	db 25, 25, 25, 20 ; V1 trades before Koga: Lavender/Saffron/Celadon/Diglett's Cave
 	assert_table_length NUM_NPC_TRADES

@@ -24,6 +24,7 @@ CeladonCity_TextPointers:
 	dw_const CeladonCityPoliwrathText,         TEXT_CELADONCITY_POLIWRATH
 	dw_const CeladonCityRocket1Text,           TEXT_CELADONCITY_ROCKET1
 	dw_const CeladonCityRocket2Text,           TEXT_CELADONCITY_ROCKET2
+	dw_const CeladonCityTradeNPCText, TEXT_CELADONCITY_TRADE_NPC
 	dw_const CeladonCityTrainerTips1Text,      TEXT_CELADONCITY_TRAINER_TIPS1
 	dw_const CeladonCitySignText,              TEXT_CELADONCITY_SIGN
 	dw_const PokeCenterSignText,               TEXT_CELADONCITY_POKECENTER_SIGN
@@ -33,6 +34,7 @@ CeladonCity_TextPointers:
 	dw_const CeladonCityTrainerTips2Text,      TEXT_CELADONCITY_TRAINER_TIPS2
 	dw_const CeladonCityPrizeExchangeSignText, TEXT_CELADONCITY_PRIZEEXCHANGE_SIGN
 	dw_const CeladonCityGameCornerSignText,    TEXT_CELADONCITY_GAMECORNER_SIGN
+
 
 CeladonCityLittleGirlText:
 	text_far _CeladonCityLittleGirlText
@@ -141,3 +143,10 @@ CeladonCityPrizeExchangeSignText:
 CeladonCityGameCornerSignText:
 	text_far _CeladonCityGameCornerSignText
 	text_end
+
+CeladonCityTradeNPCText:
+	text_asm
+	ld a, TRADE_FOR_KADABRA_MACHOKE
+	ld [wWhichTrade], a
+	predef DoInGameTradeDialogue
+	jp TextScriptEnd

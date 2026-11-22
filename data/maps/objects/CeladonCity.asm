@@ -8,6 +8,7 @@
 	const_export CELADONCITY_POLIWRATH
 	const_export CELADONCITY_ROCKET1
 	const_export CELADONCITY_ROCKET2
+	const_export CELADONCITY_TRADE_NPC
 
 CeladonCity_Object:
 	db $f ; border block
@@ -49,4 +50,5 @@ CeladonCity_Object:
 	object_event 32, 29, SPRITE_ROCKET, WALK, LEFT_RIGHT, TEXT_CELADONCITY_ROCKET1
 	object_event 42, 14, SPRITE_ROCKET, WALK, LEFT_RIGHT, TEXT_CELADONCITY_ROCKET2
 
+	object_event 19, 24, SPRITE_GENTLEMAN, STAY, DOWN, TEXT_CELADONCITY_TRADE_NPC
 	def_warps_to CELADON_CITY
