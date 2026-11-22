@@ -286,3 +286,34 @@ MewBattleText:
 	call PlayCry
 	call WaitForSoundToFinish
 	jp TextScriptEnd
+
+VermilionDockGetInteractionCoords::
+	call GetPredefRegisters
+	predef GetTileAndCoordsInFrontOfPlayer
+	ld a, [wCurMap]
+	cp VERMILION_DOCK
+	ret nz
+	ld a, [wSpritePlayerStateData1FacingDirection]
+	cp SPRITE_FACING_UP
+	ret nz
+	ld a, e
+	cp 20
+	ret c
+	cp 22
+	ret nc
+	CheckEvent EVENT_BEAT_MEW
+	jr z, .mewAvailable
+	ld a, [wYCoord]
+	cp 1
+	jr z, .hideTruckEvent
+	cp 2
+	ret nz
+.hideTruckEvent
+	ld d, a
+	ret
+.mewAvailable
+	ld a, [wYCoord]
+	cp 2
+	ret nz
+	dec d
+	ret

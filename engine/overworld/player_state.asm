@@ -274,34 +274,6 @@ _GetTileAndCoordsInFrontOfPlayer:
 	cp SPRITE_FACING_UP
 	jr nz, .notFacingUp
 ; facing up
-	ld a, [wCurMap]
-	cp VERMILION_DOCK
-	jr nz, .normalUp
-	ld a, e
-	cp 20
-	jr c, .normalUp
-	cp 22
-	jr nc, .normalUp
-	; The truck is inactive while Mew's trainer defeat flag is set.
-	CheckEvent EVENT_BEAT_MEW
-	jr z, .mewAvailable
-	ld a, [wYCoord]
-	cp 1
-	jr z, .inactiveTruck
-	cp 2
-	jr nz, .normalUp
-.inactiveTruck
-	lda_coord 8, 9
-	jr .storeTile
-.mewAvailable
-	ld a, [wYCoord]
-	cp 2
-	jr nz, .normalUp
-	lda_coord 8, 5
-	dec d
-	dec d
-	jr .storeTile
-.normalUp
 	lda_coord 8, 7
 	dec d
 	jr .storeTile

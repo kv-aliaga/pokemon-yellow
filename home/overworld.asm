@@ -1063,7 +1063,7 @@ IsSpriteOrSignInFrontOfPlayer::
 	and a
 	jr z, .extendRangeOverCounter
 ; if there are signs
-	predef GetTileAndCoordsInFrontOfPlayer ; get the coordinates in front of the player in de
+	predef VermilionDockGetInteractionCoords ; map-specific A-button coordinate override
 	call SignLoop
 	ret c
 .extendRangeOverCounter
