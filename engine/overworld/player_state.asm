@@ -277,9 +277,6 @@ _GetTileAndCoordsInFrontOfPlayer:
 	ld a, [wCurMap]
 	cp VERMILION_DOCK
 	jr nz, .normalUp
-	ld a, [wYCoord]
-	cp 2
-	jr nz, .normalUp
 	ld a, e
 	cp 20
 	jr c, .normalUp
@@ -287,6 +284,18 @@ _GetTileAndCoordsInFrontOfPlayer:
 	jr nc, .normalUp
 	; The truck is inactive while Mew's trainer defeat flag is set.
 	CheckEvent EVENT_BEAT_MEW
+	jr z, .mewAvailable
+	ld a, [wYCoord]
+	cp 1
+	jr z, .inactiveTruck
+	cp 2
+	jr nz, .normalUp
+.inactiveTruck
+	lda_coord 8, 9
+	jr .storeTile
+.mewAvailable
+	ld a, [wYCoord]
+	cp 2
 	jr nz, .normalUp
 	lda_coord 8, 5
 	dec d

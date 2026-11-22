@@ -225,9 +225,6 @@ VermilionDock_TextPointers:
 VermilionDockMewText:
 	text_asm
 	; The truck's background event starts the encounter using the hidden trainer object.
-	; Keep the appearance and after-battle text from repeating until Mew is rearmed.
-	CheckEvent EVENT_BEAT_MEW
-	jp nz, TextScriptEnd
 	ld a, VERMILIONDOCK_MEW
 	ld [wSpriteIndex], a
 	ld a, [wPartyCount]
