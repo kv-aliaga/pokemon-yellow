@@ -295,25 +295,28 @@ VermilionDockGetInteractionCoords::
 	ret nz
 	ld a, [wSpritePlayerStateData1FacingDirection]
 	cp SPRITE_FACING_UP
+	jr nz, .checkTruckTarget
+	ld a, [wYCoord]
+	cp 2
+	jr nz, .checkTruckTarget
+	ld a, e
+	cp 20
+	jr c, .checkTruckTarget
+	cp 22
+	jr nc, .checkTruckTarget
+	CheckEvent EVENT_BEAT_MEW
+	jr nz, .suppressTruckTarget
+	dec d ; extend the interaction two event cells up to the truck art
+	ret
+.checkTruckTarget
+	ld a, d
+	and a
 	ret nz
 	ld a, e
 	cp 20
 	ret c
 	cp 22
 	ret nc
-	CheckEvent EVENT_BEAT_MEW
-	jr z, .mewAvailable
-	ld a, [wYCoord]
-	cp 1
-	jr z, .hideTruckEvent
-	cp 2
-	ret nz
-.hideTruckEvent
-	ld d, a
-	ret
-.mewAvailable
-	ld a, [wYCoord]
-	cp 2
-	ret nz
-	dec d
+.suppressTruckTarget
+	ld d, $ff ; no background event is located at this coordinate
 	ret
