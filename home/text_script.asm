@@ -216,10 +216,6 @@ DisplayRepelWoreOffText::
 	jp c, CloseTextDisplay ; the Yes/No input also dismisses both messages
 	jp AfterDisplayingTextID
 
-RepelWoreOffText::
-	text_far _RepelWoreOffText
-	text_end
-
 DisplayPikachuEmotion::
 	callfar TalkToPikachu
 	jp CloseTextDisplay
