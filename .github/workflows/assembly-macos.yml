@@ -1,0 +1,48 @@
+name: Assembly and ROM build (macOS)
+
+on:
+  push:
+    branches: [ master ]
+  pull_request:
+
+env:
+  rgbds_version: v1.0.4
+  RGBASMFLAGS: -Weverything -Wtruncation=1 -Werror
+  RGBLINKFLAGS: -Weverything -Wtruncation=1 -Werror
+
+jobs:
+  build-macos:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v7
+
+      - name: Checkout rgbds
+        uses: actions/checkout@v7
+        with:
+          path: rgbds
+          ref: ${{ env.rgbds_version }}
+          repository: gbdev/rgbds
+
+      - name: Install rgbds
+        working-directory: rgbds
+        run: |
+          brew install bison libpng pkg-config
+          export PATH="$(brew --prefix bison)/bin:$PATH"
+          sudo make -j$(sysctl -n hw.ncpu) install
+
+      - name: Remove rgbds
+        run: |
+          rm -rf rgbds
+
+      - name: Compare
+        if: ${{ github.repository_owner == 'pret' }}
+        run: |
+          make DEBUG=1 -j$(sysctl -n hw.ncpu) compare
+          .github/checkdiff.sh
+
+      - name: Make
+        if: ${{ github.repository_owner != 'pret' }}
+        run: |
+          make -j$(sysctl -n hw.ncpu)
+          .github/checkdiff.sh
