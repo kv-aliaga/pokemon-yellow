@@ -16,6 +16,16 @@ Lab4Script_GetFossilsInBag:
 	ld a, [hli]
 	and a
 	jr z, .done
+	ld [wTempByteValue], a
+	cp OLD_AMBER
+	jr nz, .checkQuantity
+	ld a, [wCurMap]
+	cp MUSEUM_1F
+	jr nz, .checkQuantity
+	CheckEvent EVENT_GOT_HM01
+	jr z, .loop
+.checkQuantity
+	ld a, [wTempByteValue]
 	push hl
 	push de
 	ld [wTempByteValue], a

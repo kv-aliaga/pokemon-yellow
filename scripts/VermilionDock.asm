@@ -1,5 +1,8 @@
 VermilionDock_Script:
 	call EnableAutoTextBoxDrawing
+	ld a, [wCurMapScript]
+	cp 2 ; TalkToTrainer starts Mew directly; finish its battle here.
+	jr z, .endMewBattle
 	CheckEventHL EVENT_STARTED_WALKING_OUT_OF_DOCK
 	jr nz, .walking_out_of_dock
 	CheckEventReuseHL EVENT_GOT_HM01
@@ -25,6 +28,11 @@ VermilionDock_Script:
 	ld [wOverrideSimulatedJoypadStatesMask], a
 	dec a
 	ld [wJoyIgnore], a
+	ret
+.endMewBattle
+	call EndTrainerBattle
+	xor a
+	ld [wCurMapScript], a
 	ret
 .walking_out_of_dock
 	CheckEventAfterBranchReuseHL EVENT_WALKED_OUT_OF_DOCK, EVENT_STARTED_WALKING_OUT_OF_DOCK
@@ -210,8 +218,71 @@ VermilionDock_EraseSSAnne:
 
 VermilionDock_TextPointers:
 	def_text_pointers
+	dw_const VermilionDockMewText, TEXT_VERMILIONDOCK_MEW
 	dw_const VermilionDockUnusedText, TEXT_VERMILIONDOCK_UNUSED
 
 VermilionDockUnusedText:
 	text_far _VermilionDockUnusedText
 	text_end
+
+VermilionDockMewText:
+	text_asm
+	ld a, [wPartyCount]
+	and a
+	jr z, .noParty
+	ld b, a
+	ld hl, wPartyMon1Level
+	xor a
+	ld c, a
+.loop
+	ld a, [hl]
+	cp c
+	jr c, .keepMax
+	ld c, a
+.keepMax
+	ld de, PARTYMON_STRUCT_LENGTH
+	add hl, de
+	dec b
+	jr nz, .loop
+	ld a, c
+	add 5
+	cp 100
+	jr c, .levelReady
+	ld a, 100
+.levelReady
+	ld c, a
+	ld a, [wSpriteIndex]
+	dec a
+	add a
+	ld e, a
+	ld d, 0
+	ld hl, wMapSpriteExtraData
+	add hl, de
+	inc hl
+	ld [hl], c
+	ld hl, MewTrainerHeader
+	call TalkToTrainer
+	jp TextScriptEnd
+.noParty
+	ld hl, MewNeedsPartyText
+	call PrintText
+	jp TextScriptEnd
+
+MewNeedsPartyText:
+	text "Something stirs under"
+	line "the truck..."
+	prompt
+	text_end
+
+MewTrainerHeader:
+	trainer EVENT_BEAT_MEW, 0, MewBattleText, MewBattleText, MewBattleText
+	db -1
+
+MewBattleText:
+	text "Mew leaps out from"
+	line "under the truck!@"
+	text_asm
+	ld a, MEW
+	call PlayCry
+	call WaitForSoundToFinish
+	jp TextScriptEnd

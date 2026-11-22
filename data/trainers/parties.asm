@@ -244,6 +244,9 @@ SuperNerdData:
 	db 34, PONYTA, CHARMANDER, VULPIX, GROWLITHE, 0
 	db 41, RAPIDASH, 0
 	db 37, GROWLITHE, VULPIX, 0
+; Pewter Museum fossil rematch
+	db 25, GRIMER, OMANYTE, 0
+	db 25, VOLTORB, KABUTO, 0
 
 HikerData:
 ; Mt. Moon 1F

@@ -1,3 +1,5 @@
+	const_export DIGLETTSCAVE_TRADE_NPC
+
 DiglettsCave_Object:
 	db $19 ; border block
 
@@ -9,4 +11,5 @@ DiglettsCave_Object:
 
 	def_object_events
 
+	object_event 10,  9, SPRITE_SUPER_NERD, STAY, DOWN, TEXT_DIGLETTSCAVE_TRADE_NPC
 	def_warps_to DIGLETTS_CAVE

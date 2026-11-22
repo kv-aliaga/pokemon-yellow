@@ -33,7 +33,8 @@ HallOfFameResetEventsAndSaveScript:
 	res BIT_NO_MAP_MUSIC, [hl]
 	ASSERT wStatusFlags7 + 1 == wElite4Flags
 	inc hl
-	set BIT_UNUSED_BEAT_ELITE_4, [hl] ; unused
+	set BIT_UNUSED_BEAT_ELITE_4, [hl] ; full Elite Four victory
+	call HallOfFameRearmUncaughtLegendaries
 	xor a ; SCRIPT_*_DEFAULT
 	ld hl, wLoreleisRoomCurScript
 	ld [hli], a ; wLoreleisRoomCurScript
@@ -110,3 +111,58 @@ HallOfFame_TextPointers:
 HallOfFameOakText:
 	text_far _HallOfFameOakText
 	text_end
+
+HallOfFameRearmUncaughtLegendaries:
+	ld a, ARTICUNO
+	call HallOfFameCheckOwned
+	jr nz, .articunoOwned
+	ResetEvent EVENT_BEAT_ARTICUNO
+	ld a, TOGGLE_ARTICUNO
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
+.articunoOwned
+	ld a, ZAPDOS
+	call HallOfFameCheckOwned
+	jr nz, .zapdosOwned
+	ResetEvent EVENT_BEAT_ZAPDOS
+	ld a, TOGGLE_ZAPDOS
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
+.zapdosOwned
+	ld a, MOLTRES
+	call HallOfFameCheckOwned
+	jr nz, .moltresOwned
+	ResetEvent EVENT_BEAT_MOLTRES
+	ld a, TOGGLE_MOLTRES
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
+.moltresOwned
+	ld a, MEWTWO
+	call HallOfFameCheckOwned
+	jr nz, .mewtwoOwned
+	ResetEvent EVENT_BEAT_MEWTWO
+	ld a, TOGGLE_MEWTWO
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
+.mewtwoOwned
+	ld a, MEW
+	call HallOfFameCheckOwned
+	ret nz
+	ResetEvent EVENT_BEAT_MEW
+	ld a, TOGGLE_VERMILION_DOCK_MEW
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
+	ret
+
+HallOfFameCheckOwned:
+	ld [wPokedexNum], a
+	predef IndexToPokedex
+	ld a, [wPokedexNum]
+	dec a
+	ld c, a
+	ld hl, wPokedexOwned
+	ld b, FLAG_TEST
+	predef FlagActionPredef
+	ld a, c
+	and a
+	ret

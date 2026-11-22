@@ -133,6 +133,16 @@ InGameTrade_DoTrade:
 	call RemovePokemon
 	ld a, $80 ; prevent the player from naming the mon
 	ld [wMonDataLocation], a
+	ld a, [wWhichTrade]
+	ld c, a
+	ld b, 0
+	ld hl, TradeMonReceivedLevels
+	add hl, bc
+	ld a, [hl]
+	and a
+	jr z, .inheritOfferedLevel
+	ld [wCurEnemyLevel], a
+.inheritOfferedLevel
 	call AddPartyMon
 	call InGameTrade_CopyDataToReceivedMon
 	call InGameTrade_CheckForTradeEvo

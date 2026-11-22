@@ -13,7 +13,8 @@
 	const_export SAFFRONCITY_PIDGEOT
 	const_export SAFFRONCITY_ROCKER
 	const_export SAFFRONCITY_ROCKET8
-	const_export SAFFRONCITY_ROCKET9 ; removed in yellow, but still referenced in data/maps/toggleable_objects.asm
+	const_export SAFFRONCITY_TRADE_NPC
+	const_export SAFFRONCITY_ROCKET9 ; unused legacy object slot, still referenced by toggle data
 
 SaffronCity_Object:
 	db $f ; border block
@@ -56,4 +57,5 @@ SaffronCity_Object:
 	object_event 18,  8, SPRITE_ROCKER, STAY, UP, TEXT_SAFFRONCITY_ROCKER
 	object_event 18, 22, SPRITE_ROCKET, STAY, DOWN, TEXT_SAFFRONCITY_ROCKET8
 
+	object_event  9, 20, SPRITE_SILPH_WORKER_M, STAY, DOWN, TEXT_SAFFRONCITY_TRADE_NPC
 	def_warps_to SAFFRON_CITY

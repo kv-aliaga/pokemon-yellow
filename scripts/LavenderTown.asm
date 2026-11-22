@@ -6,12 +6,14 @@ LavenderTown_TextPointers:
 	dw_const LavenderTownLittleGirlText,       TEXT_LAVENDERTOWN_LITTLE_GIRL
 	dw_const LavenderTownCooltrainerMText,     TEXT_LAVENDERTOWN_COOLTRAINER_M
 	dw_const LavenderTownSuperNerdText,        TEXT_LAVENDERTOWN_SUPER_NERD
+	dw_const LavenderTownTradeNPCText, TEXT_LAVENDERTOWN_TRADE_NPC
 	dw_const LavenderTownSignText,             TEXT_LAVENDERTOWN_SIGN
 	dw_const LavenderTownSilphScopeSignText,   TEXT_LAVENDERTOWN_SILPH_SCOPE_SIGN
 	dw_const MartSignText,                     TEXT_LAVENDERTOWN_MART_SIGN
 	dw_const PokeCenterSignText,               TEXT_LAVENDERTOWN_POKECENTER_SIGN
 	dw_const LavenderTownPokemonHouseSignText, TEXT_LAVENDERTOWN_POKEMON_HOUSE_SIGN
 	dw_const LavenderTownPokemonTowerSignText, TEXT_LAVENDERTOWN_POKEMON_TOWER_SIGN
+
 
 LavenderTownLittleGirlText:
 	text_asm
@@ -62,3 +64,10 @@ LavenderTownPokemonHouseSignText:
 LavenderTownPokemonTowerSignText:
 	text_far _LavenderTownPokemonTowerSignText
 	text_end
+
+LavenderTownTradeNPCText:
+	text_asm
+	ld a, TRADE_FOR_MACHOKE_HAUNTER
+	ld [wWhichTrade], a
+	predef DoInGameTradeDialogue
+	jp TextScriptEnd
