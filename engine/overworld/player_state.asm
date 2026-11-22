@@ -285,6 +285,9 @@ _GetTileAndCoordsInFrontOfPlayer:
 	jr c, .normalUp
 	cp 22
 	jr nc, .normalUp
+	; The truck is inactive while Mew's trainer defeat flag is set.
+	CheckEvent EVENT_BEAT_MEW
+	jr nz, .normalUp
 	lda_coord 8, 5
 	dec d
 	dec d
