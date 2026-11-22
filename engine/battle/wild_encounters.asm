@@ -100,22 +100,8 @@ TryDoWildEncounter:
 	ret
 
 RepelReplacementPrompt::
-	ld b, MAX_REPEL
-	predef GetQuantityOfItemInBag
-	ld a, b
-	and a
-	jr nz, .ask
-	ld b, SUPER_REPEL
-	predef GetQuantityOfItemInBag
-	ld a, b
-	and a
-	jr nz, .ask
-	ld b, REPEL
-	predef GetQuantityOfItemInBag
-	ld a, b
-	and a
+	call GetStrongestRepelInBag
 	ret z
-.ask
 	ld hl, RepelAgainText
 	call PrintText
 	call YesNoChoice
@@ -123,40 +109,67 @@ RepelReplacementPrompt::
 	and a
 	ret nz
 ; Recheck the Bag after confirmation and consume exactly one strongest available Repel.
-	ld b, MAX_REPEL
-	predef GetQuantityOfItemInBag
-	ld a, b
-	and a
-	jr nz, .useMaxRepel
-	ld b, SUPER_REPEL
-	predef GetQuantityOfItemInBag
-	ld a, b
-	and a
-	jr nz, .useSuperRepel
-	ld b, REPEL
-	predef GetQuantityOfItemInBag
-	ld a, b
-	and a
+	call GetStrongestRepelInBag
 	ret z
-	ld a, REPEL
 	ldh [hItemToRemoveID], a
+	cp MAX_REPEL
+	jr z, .useMaxRepel
+	cp SUPER_REPEL
+	jr z, .useSuperRepel
 	ld a, 100
 	ld [wRepelRemainingSteps], a
 	farcall RemoveItemByID
 	ret
 .useSuperRepel
-	ld a, SUPER_REPEL
-	ldh [hItemToRemoveID], a
 	ld a, 200
 	ld [wRepelRemainingSteps], a
 	farcall RemoveItemByID
 	ret
 .useMaxRepel
-	ld a, MAX_REPEL
-	ldh [hItemToRemoveID], a
 	ld a, 250
 	ld [wRepelRemainingSteps], a
 	farcall RemoveItemByID
+	ret
+
+GetStrongestRepelInBag:
+	ld a, [wNumBagItems]
+	and a
+	jr z, .none
+	ld c, a
+	ld hl, wBagItems
+	ld d, 0
+.loop
+	ld a, [hli]
+	ld b, a
+	ld a, [hli] ; quantity
+	and a
+	jr z, .next
+	ld a, b
+	cp MAX_REPEL
+	jr z, .maxRepel
+	cp SUPER_REPEL
+	jr z, .superRepel
+	cp REPEL
+	jr nz, .next
+	ld a, d
+	and a
+	jr nz, .next
+	ld d, REPEL
+.next
+	dec c
+	jr nz, .loop
+	ld a, d
+	and a
+	ret
+.maxRepel
+	ld a, MAX_REPEL
+	and a
+	ret
+.superRepel
+	ld d, SUPER_REPEL
+	jr .next
+.none
+	xor a
 	ret
 
 RepelAgainText::
