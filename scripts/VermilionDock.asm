@@ -1,14 +1,19 @@
 VermilionDock_Script:
 	call EnableAutoTextBoxDrawing
-	ld a, [wCurMapScript]
-	cp $fe ; dock-local Mew battle is finishing
-	jp z, VermilionDockMewPostBattle
 	CheckEventHL EVENT_STARTED_WALKING_OUT_OF_DOCK
 	jr nz, .walking_out_of_dock
 	CheckEventReuseHL EVENT_GOT_HM01
 	ret z
 	ld a, [wDestinationWarpID]
 	cp $1
+	ret nz
+	; The warp ID is saved and can still be 1 when a game is resumed by the
+	; truck. Only start the ship-exit sequence on the ship's dock warp.
+	ld a, [wXCoord]
+	cp 14
+	ret nz
+	ld a, [wYCoord]
+	cp 2
 	ret nz
 	CheckEventReuseHL EVENT_SS_ANNE_LEFT
 	jp z, VermilionDockSSAnneLeavesScript
@@ -242,6 +247,10 @@ VermilionDockTruckHiddenEvent::
 .checkAvailability
 	CheckEvent EVENT_BEAT_MEW
 	ret nz
+	; A caught Mew stays unavailable even on saves without the event flag.
+	ld hl, wPokedexOwned + (DEX_MEW - 1) / 8
+	bit (DEX_MEW - 1) % 8, [hl]
+	ret nz
 	ld a, [wPartyCount]
 	and a
 	jr z, .noParty
@@ -249,8 +258,9 @@ VermilionDockTruckHiddenEvent::
 	ldh [hTextID], a
 	call DisplayTextID
 	call VermilionDockSetMewLevel
-	ld a, $fe ; distinguish this pending battle from other maps' script indices
-	ld [wCurMapScript], a
+	; Record the encounter before handing control to the battle loop so it
+	; survives saving after capture, defeat, escape, or blackout.
+	SetEvent EVENT_BEAT_MEW
 	ld a, MEW
 	ld [wCurOpponent], a
 	ret
@@ -281,11 +291,4 @@ VermilionDockSetMewLevel:
 	ld a, 100
 .setLevel
 	ld [wCurEnemyLevel], a
-	ret
-
-VermilionDockMewPostBattle:
-	; This runs after capture, defeat, running, or a blackout.
-	SetEvent EVENT_BEAT_MEW
-	xor a
-	ld [wCurMapScript], a
 	ret
