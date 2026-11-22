@@ -98,6 +98,12 @@ SameBoy 1.0.2 was launched by the implementer with a copy of `pokeyellow.gbc` an
 
 ## Manual acceptance checklist (not executed)
 
+### Repel replacement on expiry (Trello card #27)
+
+The replacement prompt is attached to the final-counter path in `engine/battle/wild_encounters.asm`. It follows the existing expiry notice, checks for at least one of the three Repel items, and resolves the strongest current Bag item after Yes. The selected item's existing duration is used (Repel 100, Super Repel 200, Max Repel 250); removal uses `RemoveItemByID` so a one-item stack is shifted safely. No and no-item paths leave the counter at zero and return through the existing encounter-suppression path. This is source inspection only; gameplay acceptance is pending.
+
+Use a copied save at normal speed in an encounter area with a controlled Bag and an active Repel at one remaining step. Test separate saves with only Repel, only Super Repel, and only Max Repel; choose Yes and verify the matching stack drops by one and its normal duration begins. Use combinations to verify Max Repel, then Super Repel, then Repel priority. Choose No and verify no item is consumed and the next step does not prompt again. Repeat with no Repel in the Bag and verify only the existing expiry notice appears. Test each selected stack at quantity 1 and quantity greater than 1, including that following Bag entries remain intact. Observe that the expiry step still suppresses a battle, then verify later encounters and the leading-Pokémon level filter. Regress no-active-Repel walking, non-encounter movement, doors, warps, ledges, and map edges. None of these gameplay scenarios is verified until observed in Emulicious or on hardware; SameBoy checks remain for the human.
+
 These steps are for a later emulator or hardware run. They are test instructions, not evidence that the behaviors have passed.
 
 1. **Wild tables:** from a save that can reach each map, walk/Surf or use the Super Rod in the locations listed above. In a debugger, inspect the selected encounter species and level against the ten slots in `locations.json`; for Route 17 and Pallet Town, sweep/test the existing selector's four result ranges (102, 76, 51, 27 outcomes per 256) and confirm only the local four results change. Confirm Route 6 and Route 19 Surf works only after the normal Soul Badge unlock, and Old/Good Rod outputs remain their global tables.

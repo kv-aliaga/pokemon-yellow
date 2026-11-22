@@ -220,6 +220,10 @@ RepelWoreOffText::
 	text_far _RepelWoreOffText
 	text_end
 
+RepelAgainText::
+	text_far _RepelAgainText
+	text_end
+
 DisplayPikachuEmotion::
 	callfar TalkToPikachu
 	jp CloseTextDisplay

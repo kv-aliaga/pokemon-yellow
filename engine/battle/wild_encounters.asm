@@ -92,12 +92,74 @@ TryDoWildEncounter:
 	ldh [hTextID], a
 	call EnableAutoTextBoxDrawing
 	call DisplayTextID
+	call RepelReplacementPrompt
+	jr .CantEncounter2
 .CantEncounter2
 	ld a, $1
 	and a
 	ret
 .willEncounter
 	xor a
+	ret
+
+RepelReplacementPrompt::
+	ld b, MAX_REPEL
+	predef GetQuantityOfItemInBag
+	ld a, b
+	and a
+	jr nz, .ask
+	ld b, SUPER_REPEL
+	predef GetQuantityOfItemInBag
+	ld a, b
+	and a
+	jr nz, .ask
+	ld b, REPEL
+	predef GetQuantityOfItemInBag
+	ld a, b
+	and a
+	ret z
+.ask
+	ld hl, RepelAgainText
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	ret nz
+; Recheck the Bag after confirmation and consume exactly one strongest available Repel.
+	ld b, MAX_REPEL
+	predef GetQuantityOfItemInBag
+	ld a, b
+	and a
+	jr nz, .useMaxRepel
+	ld b, SUPER_REPEL
+	predef GetQuantityOfItemInBag
+	ld a, b
+	and a
+	jr nz, .useSuperRepel
+	ld b, REPEL
+	predef GetQuantityOfItemInBag
+	ld a, b
+	and a
+	ret z
+	ld a, REPEL
+	ldh [hItemToRemoveID], a
+	ld a, 100
+	ld [wRepelRemainingSteps], a
+	farcall RemoveItemByID
+	ret
+.useSuperRepel
+	ld a, SUPER_REPEL
+	ldh [hItemToRemoveID], a
+	ld a, 200
+	ld [wRepelRemainingSteps], a
+	farcall RemoveItemByID
+	ret
+.useMaxRepel
+	ld a, MAX_REPEL
+	ldh [hItemToRemoveID], a
+	ld a, 250
+	ld [wRepelRemainingSteps], a
+	farcall RemoveItemByID
 	ret
 
 INCLUDE "data/wild/probabilities.asm"
