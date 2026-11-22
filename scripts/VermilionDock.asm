@@ -305,9 +305,21 @@ VermilionDockGetInteractionCoords::
 	cp 22
 	jr nc, .checkTruckTarget
 	CheckEvent EVENT_BEAT_MEW
-	jr nz, .suppressTruckTarget
+	jr nz, .mewUnavailable
+	ld a, [wYCoord]
+	cp 2
+	jr z, .extendToTruck
+	ld a, d
+	and a
+	ret z ; allow the ordinary one-step approach from the front
+	jr .checkTruckTarget
+.extendToTruck
 	dec d ; extend the interaction two event cells up to the truck art
 	ret
+.mewUnavailable
+	ld a, [wYCoord]
+	cp 2
+	jr z, .suppressTruckTarget
 .checkTruckTarget
 	ld a, d
 	and a
