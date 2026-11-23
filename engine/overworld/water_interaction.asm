@@ -21,17 +21,20 @@ CheckWaterInteraction::
 	xor a
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	ld a, [wChosenMenuItem]
-	and a ; did the player choose No?
-	jr z, .startSurf
+	and a ; did the player choose Yes?
+	jr nz, .restorePartySelection
+	ld a, [wActionResultOrTookBattleTurn]
+	and a ; did Surf start successfully?
+	jr nz, .surfStarted
+.restorePartySelection
 	pop af
 	ld [wCurPartySpecies], a
 	pop af
 	ld [wWhichPokemon], a
 	ret
-.startSurf
+.surfStarted
 	pop af ; discard the saved party selection
 	pop af ; discard the saved party species
-	farcall TryStartSurf
 	ret
 
 FindPartyMonThatKnowsSurf:
@@ -83,6 +86,22 @@ WaterInteractionText::
 	line "use SURF?@"
 	text_asm
 	call YesNoChoice
+	ld a, [wChosenMenuItem]
+	and a ; did the player choose Yes?
+	jr z, .surf
+	ld a, 1 ; close both menus after the player releases A
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	jp TextScriptEnd
+.surf
+	farcall TryStartSurf
+	jr c, .surfStarted
+	xor a ; failed/denied: let the normal text flow show its message
+	ld [wActionResultOrTookBattleTurn], a
+	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
+	jp TextScriptEnd
+.surfStarted
+	ld a, 1
+	ld [wActionResultOrTookBattleTurn], a
 	ld a, 1
 	ld [wDoNotWaitForButtonPressAfterDisplayingText], a
 	jp TextScriptEnd
