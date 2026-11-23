@@ -79,19 +79,13 @@ TryDoWildEncounter:
 	ld [wEnemyMonSpecies2], a
 	ld a, [wRepelRemainingSteps]
 	and a
-	jr z, .willEncounter
-	ld a, [wPartyMon1Level]
-	ld b, a
-	ld a, [wCurEnemyLevel]
-	cp b
-	jr c, .CantEncounter2 ; repel prevents encounters if the leading party mon's level is higher than the wild mon
+	jr nz, .CantEncounter2 ; an active Repel blocks every wild encounter, regardless of level
 	jr .willEncounter
 .lastRepelStep
+	; $ff is outside the valid Repel duration range; NewBattle handles the UI.
+	ld a, $ff
 	ld [wRepelRemainingSteps], a
-	ld a, TEXT_REPEL_WORE_OFF
-	ldh [hTextID], a
-	call EnableAutoTextBoxDrawing
-	call DisplayTextID
+	jr .CantEncounter2
 .CantEncounter2
 	ld a, $1
 	and a
@@ -99,5 +93,106 @@ TryDoWildEncounter:
 .willEncounter
 	xor a
 	ret
+
+DisplayRepelExpiryFlow::
+	call GetStrongestRepelInBag
+	jr z, .noRepel
+	ld hl, RepelWoreOffText
+	call PrintText
+	; The replacement question is shorter; clear leftover characters from the notice.
+	hlcoord 1, 14
+	lb bc, 3, 18
+	call ClearScreenArea
+	call RepelReplacementPrompt
+	scf ; the Yes/No choice consumed the button press
+	ret
+.noRepel
+	ld hl, RepelWoreOffText
+	call PrintText
+	xor a ; no menu was shown, so let the expiry notice wait for dismissal
+	ret
+
+RepelReplacementPrompt::
+	call GetStrongestRepelInBag
+	ret z
+	ld hl, RepelAgainText
+	call PrintText
+	call YesNoChoice
+	ld a, [wCurrentMenuItem]
+	and a
+	ret nz
+; Recheck the Bag after confirmation and consume exactly one strongest available Repel.
+	call GetStrongestRepelInBag
+	ret z
+	ldh [hItemToRemoveID], a
+	cp MAX_REPEL
+	jr z, .useMaxRepel
+	cp SUPER_REPEL
+	jr z, .useSuperRepel
+	ld a, 100
+	ld [wRepelRemainingSteps], a
+	farcall RemoveItemByID
+	ret
+.useSuperRepel
+	ld a, 200
+	ld [wRepelRemainingSteps], a
+	farcall RemoveItemByID
+	ret
+.useMaxRepel
+	ld a, 250
+	ld [wRepelRemainingSteps], a
+	farcall RemoveItemByID
+	ret
+
+GetStrongestRepelInBag:
+	ld a, [wNumBagItems]
+	and a
+	jr z, .none
+	ld c, a
+	ld hl, wBagItems
+	ld d, 0
+.loop
+	ld a, [hli]
+	ld b, a
+	ld a, [hli] ; quantity
+	and a
+	jr z, .next
+	ld a, b
+	cp MAX_REPEL
+	jr z, .maxRepel
+	cp SUPER_REPEL
+	jr z, .superRepel
+	cp REPEL
+	jr nz, .next
+	ld a, d
+	and a
+	jr nz, .next
+	ld d, REPEL
+.next
+	dec c
+	jr nz, .loop
+	ld a, d
+	and a
+	ret
+.maxRepel
+	ld a, MAX_REPEL
+	and a
+	ret
+.superRepel
+	ld d, SUPER_REPEL
+	jr .next
+.none
+	xor a
+	ret
+
+RepelAgainText::
+	text "Use another"
+	line "REPEL?@"
+	text_end
+
+RepelWoreOffText::
+	text "REPEL's effect"
+	line "wore off.@"
+	text_end
 
 INCLUDE "data/wild/probabilities.asm"

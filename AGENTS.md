@@ -21,6 +21,7 @@
 
 ## Read on demand
 
+- For Repel expiry prompts or related text-box debugging, read [`docs/licoes-aprendidas.md`](docs/licoes-aprendidas.md), an FAQ-style record of the Repel #27 failure modes and the evidence that diagnosed them. To resume card #27, also read [`docs/repel-card-27-handoff.md`](docs/repel-card-27-handoff.md) for the current branch/worktree split, unresolved scope changes, and verification status.
 - For encounter or acquisition design and implementation, read `docs/v1-wild-encounter-plan.md`, `docs/encounter-planning-design.md`, and `docs/encounters/agent-faq.md`; use `docs/encounters/locations.json` and `docs/encounters/acquisition.json` for catalog values. The code remains the authority for current ROM mechanics.
 - Before extending V1 implementation work, read `docs/encounter-implementation.md` for resolved implementation choices and the verification record. Read `docs/legendary-encounters.md` when changing legendary or Mew behavior.
 - Read `agents/PROJECT_SPEC.md` when a task touches project scope, species availability, or graphics/sprite constraints.

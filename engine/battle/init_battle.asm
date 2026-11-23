@@ -1,3 +1,32 @@
+; Determine if a battle should occur after an overworld step.
+; Sets carry if a battle occurred and clears it otherwise.
+NewBattle::
+	ld a, [wStatusFlags3]
+	bit BIT_ON_DUNGEON_WARP, a
+	jr nz, .noBattle
+	call IsPlayerCharacterBeingControlledByGame
+	jr nz, .noBattle ; no battle if the player character is under the game's control
+	ld a, [wStatusFlags4]
+	bit BIT_NO_BATTLES, a
+	jr nz, .noBattle
+	farcall InitBattle
+	push af
+	ld a, [wRepelRemainingSteps]
+	cp $ff
+	jr nz, .done
+	xor a
+	ld [wRepelRemainingSteps], a
+	ld a, TEXT_REPEL_WORE_OFF
+	ldh [hTextID], a
+	call EnableAutoTextBoxDrawing
+	call DisplayTextID
+.done
+	pop af
+	ret
+.noBattle
+	and a
+	ret
+
 InitBattle::
 	ld a, [wCurOpponent]
 	and a

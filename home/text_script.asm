@@ -212,13 +212,9 @@ PlayerBlackedOutText::
 	text_end
 
 DisplayRepelWoreOffText::
-	ld hl, RepelWoreOffText
-	call PrintText
+	farcall DisplayRepelExpiryFlow
+	jp c, CloseTextDisplay ; the Yes/No input also dismisses both messages
 	jp AfterDisplayingTextID
-
-RepelWoreOffText::
-	text_far _RepelWoreOffText
-	text_end
 
 DisplayPikachuEmotion::
 	callfar TalkToPikachu
