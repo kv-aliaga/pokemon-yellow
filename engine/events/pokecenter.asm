@@ -50,6 +50,7 @@ DisplayPokemonCenterDialogue_::
 	call DelayFrames
 	farcall AnimateHealingMachine ; do the healing machine animation
 	predef HealParty
+	callfar HealBoxedPokemon
 	xor a
 	ld [wAudioFadeOutControl], a
 	ld a, [wAudioSavedROMBank]
