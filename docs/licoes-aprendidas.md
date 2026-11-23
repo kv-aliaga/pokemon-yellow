@@ -69,3 +69,44 @@ No diagnóstico da ROM instrumentada, o jogador informou que uma seleção Sim/N
 ## Limites da verificação registrada
 
 O repositório possui builds de ROM normal e debug no CI, mas esses builds não executam o interpretador de texto nem a interface do jogo. Para este card, a matriz de gameplay e os passos de reprodução permanecem em `docs/encounter-implementation.md`. Nenhum cenário deve ser marcado como aprovado sem observação no jogo. Preserve saves originais; use cópias com inventário controlado.
+
+## FAQ: por que um popup de transição apareceu sem moldura?
+
+### Sintoma observado
+
+Ao ativar ou desativar a bicicleta por SELECT, o texto apareceu no meio da tela sem a caixa. Uma tentativa anterior mostrou uma caixa vazia antes da caixa com a mensagem esperada.
+
+### Causa observada no fluxo da bicicleta
+
+`DisplayTextIDInit` desenha uma caixa padrão para um ID de texto comum antes de chamar o handler. O handler especial de SELECT chama `ItemUseBicycle`; tanto montar quanto desmontar passam por `ItemUseReloadOverworldData`, que recarrega a visão do mapa e redesenha o tilemap. Essa recarga pode apagar a moldura que o dispatch abriu.
+
+`PrintText_NoCreatingTextBox` escreve supondo que a janela existente ainda está desenhada. Depois da recarga, isso deixou o texto sem moldura. Trocar para `PrintText` sem evitar a caixa inicial causou duas etapas de janela: a caixa desenhada pelo dispatch podia ficar vazia, seguida da caixa criada por `PrintText`. A correção específica foi pular a moldura inicial apenas para `TEXT_BICYCLE_TOGGLE` e usar `PrintText` depois da recarga, para que a mensagem desenhe sua própria caixa no tilemap atualizado.
+
+### Prevenção recomendada
+
+- Ao adicionar popup a uma ação que recarrega mapa, sprites ou tilemap, siga o fluxo inteiro desde o chamador: inicialização de `DisplayTextID`, handler, efeitos colaterais da ação, rotina que imprime o texto e rotina que fecha a janela. Não presuma que uma janela aberta antes da ação continuará visível depois dela.
+- Use `PrintText_NoCreatingTextBox` somente quando o caminho de execução garantir que a moldura continua ativa naquele ponto. Se a ação redesenha a tela antes da mensagem, desenhe a caixa depois da transição.
+- Evite combinar uma caixa criada pelo dispatch com uma segunda chamada que cria sua própria caixa. Verifique se a primeira janela contém texto ou se é uma caixa vazia antes da mensagem final.
+- Em gameplay, confirme montagem e desmontagem, texto dentro de uma única caixa, ausência de popup vazio e restauração correta de sprite/música. Teste também a entrada logo após fechar a mensagem e junto a água; houve relato de interação inesperada com Surf, mas sua causa não foi confirmada neste registro.
+- Uma build bem-sucedida não verifica o conteúdo do tilemap nem a visibilidade da moldura. Se a sessão de jogo não estiver disponível, deixe esses resultados pendentes e forneça passos de reprodução.
+
+### Evidência e limites
+
+A sequência de chamadas e a correção foram inspecionadas no código; as builds normal e debug passaram após a correção. Não há confirmação visual em gameplay neste registro. Portanto, a correção compilada não deve ser descrita como comportamento visual validado.
+
+## FAQ: como verificar uma mudança na velocidade da bicicleta?
+
+### Sintoma e mudança observados
+
+O jogador relatou que a bicicleta era mais lenta que correr segurando B. O avanço de animação da bicicleta foi aumentado de três para quatro chamadas por quadro. Esse número foi escolhido como ajuste de implementação; não veio de uma medição da velocidade percebida ou de um valor de referência documentado.
+
+### Prevenção recomendada
+
+- Primeiro confirme que a mudança de velocidade está no escopo vigente; no card #44 original, mudar a velocidade da bicicleta estava explicitamente fora do escopo, e a solicitação posterior do jogador alterou essa direção.
+- Antes de escolher um número de avanços por quadro, identifique como a rotina afeta deslocamento em tiles, limites de `wWalkCounter`, conexões de mapa e movimento especial. Mais chamadas de animação não devem ser tratadas automaticamente como uma velocidade final comprovada.
+- Compare bicicleta e corrida com B em um trecho plano e controlado, usando a mesma distância e condições. Verifique também colisões, bordas, NPCs e transições de mapa para detectar efeitos colaterais.
+- Registre o que foi medido e observado. Builds normal e debug confirmam montagem/linkedição, não velocidade jogável; sem execução em jogo, mantenha a comparação como pendente.
+
+### Evidência e limites
+
+A alteração para quatro avanços compilou nas builds normal e debug. Não foi feita medição comparativa em gameplay nesta sessão; portanto, não há evidência de que a bicicleta tenha alcançado ou superado a velocidade de corrida com B.
