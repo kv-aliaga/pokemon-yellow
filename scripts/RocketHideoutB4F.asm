@@ -318,6 +318,7 @@ RocketHideoutB4F_TextPointers:
 	dw_const RocketHideoutB4FText11,                      TEXT_ROCKETHIDEOUTB4F_TEXT11
 	dw_const RocketHideoutB4FText12,                      TEXT_ROCKETHIDEOUTB4F_TEXT12
 	dw_const RocketHideoutB4FText13,                      TEXT_ROCKETHIDEOUTB4F_TEXT13
+	dw_const RocketHideoutB4FGiovanniText,                TEXT_ROCKETHIDEOUTB4F_GIOVANNI_AT_DESK
 
 RocketHideout4TrainerHeaders:
 	def_trainers 4
@@ -371,7 +372,7 @@ RocketHideoutB4FGiovanniText:
 	ld hl, .WhatCannotBeText
 	ld de, .WhatCannotBeText
 	call SaveEndBattleTextPointers
-	ldh a, [hSpriteIndex]
+	ld a, ROCKETHIDEOUTB4F_GIOVANNI
 	ld [wSpriteIndex], a
 	call EngageMapTrainer
 	call InitBattleEnemyParameters
