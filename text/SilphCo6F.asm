@@ -77,7 +77,7 @@ _SilphCo6FScientistBattleText::
 
 	para "He shouldn't have"
 	line "sent me to the"
-	cont "TIKSI BRANCH!"
+	cont "WYNDON BRANCH!"
 	done
 
 _SilphCo6FScientistEndBattleText::
@@ -85,9 +85,9 @@ _SilphCo6FScientistEndBattleText::
 	prompt
 
 _SilphCo6FScientistAfterBattleText::
-	text "TIKSI BRANCH?"
-	line "It's in Russian"
-	cont "no man's land!"
+	text "WYNDON BRANCH?"
+	line "It's in Galar's"
+	cont "WILD AREA!"
 	done
 
 _SilphCo6FRocket2BattleText::

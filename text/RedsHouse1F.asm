@@ -29,10 +29,10 @@ _RedsHouse1FMomLookingGreatText::
 	done
 
 _RedsHouse1FTVStandByMeMovieText::
-	text "There's a movie"
-	line "on TV. Four boys"
-	cont "are walking on"
-	cont "railroad tracks."
+	text "A movie is on TV."
+	line "#MON in Love by"
+	cont "Cleavon"
+	cont "Schpielbunk!"
 
 	para "I better go too."
 	done

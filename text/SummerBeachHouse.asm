@@ -22,7 +22,7 @@ _SummerBeachHouseSurfinDudeText3::
 	done
 
 _SummerBeachHouseSurfinDudeText4::
-	text "Dogs and burgers"
+	text "Fidough's bread!"
 	line "on special today!"
 	done
 

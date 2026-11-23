@@ -48,8 +48,8 @@ _Museum2FHikerText3::
 	done
 
 _Museum2FSpaceShuttleSignText::
-	text "SPACE SHUTTLE"
-	line "COLUMBIA"
+	text "INFINITY ENERGY"
+	line "ROCKET"
 	done
 
 _Museum2FMoonStoneSignText::
