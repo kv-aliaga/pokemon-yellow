@@ -713,6 +713,12 @@ TryBicycleSelectShortcut::
 	jr z, .notHandled
 	call IsBikeRidingAllowed
 	jr nc, .notHandled
+	; The Bag item flow fills wStringBuffer with the item name before use.
+	; Bicycle messages read that buffer, so reproduce the same setup here.
+	ld a, BICYCLE
+	ld [wNamedObjectIndex], a
+	call GetItemName
+	call CopyToStringBuffer
 	call ItemUseBicycle ; reuse the existing transition, sprite, and music setup
 	xor a
 	ldh [hJoyPressed], a ; consume SELECT and any simultaneous button press
