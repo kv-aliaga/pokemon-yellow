@@ -30,8 +30,8 @@ _RedsHouse1FMomLookingGreatText::
 
 _RedsHouse1FTVStandByMeMovieText::
 	text "A movie is on TV."
-	line "#MON in Love by"
-	cont "Cleavon"
+	line "#MON in Love"
+	cont "by Cleavon"
 	cont "Schpielbunk!"
 
 	para "I better go too."
