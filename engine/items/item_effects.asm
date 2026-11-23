@@ -691,6 +691,41 @@ ItemUseBicycle:
 	ld [wWalkBikeSurfState], a
 	ret
 
+TryBicycleSelectShortcut::
+	call GetPredefRegisters
+	push bc
+	push de
+	push hl
+	ldh a, [hJoyPressed]
+	bit B_PAD_SELECT, a
+	jr z, .notHandled
+	ldh a, [hJoyHeld]
+	and PAD_CTRL_PAD
+	jr nz, .notHandled ; require the player to be stationary
+	ld a, [wWalkBikeSurfState]
+	cp 2 ; ignore SELECT while surfing
+	jr z, .notHandled
+	ld a, [wStatusFlags6]
+	bit BIT_ALWAYS_ON_BIKE, a
+	jr nz, .notHandled ; preserve forced-bike maps
+	ld b, BICYCLE
+	call IsItemInBag
+	jr z, .notHandled
+	call IsBikeRidingAllowed
+	jr nc, .notHandled
+	call ItemUseBicycle ; reuse the existing transition, sprite, and music setup
+	xor a
+	ldh [hJoyPressed], a ; consume SELECT and any simultaneous button press
+	jr .done
+.notHandled
+	and a
+	; .done preserves registers used by the overworld input loop.
+.done
+	pop hl
+	pop de
+	pop bc
+	ret
+
 ; indirectly used by SURF in StartMenu_Pokemon.surf
 ItemUseSurfboard:
 	ld a, [wWalkBikeSurfState]

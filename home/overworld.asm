@@ -51,7 +51,7 @@ OverworldLoopLessDelay::
 	and a
 	jp nz, .moveAhead ; if the player sprite has not yet completed the walking animation
 	call JoypadOverworld ; get joypad state (which is possibly simulated)
-	farcall SafariZoneCheck
+	predef SafariZoneCheck
 	ld a, [wSafariZoneGameOver]
 	and a
 	jp nz, WarpFound2
@@ -71,6 +71,7 @@ OverworldLoopLessDelay::
 	ldh a, [hJoyHeld]
 	jr .checkIfStartIsPressed
 .notSimulating
+	predef TryBicycleSelectShortcut
 	ldh a, [hJoyPressed]
 .checkIfStartIsPressed
 	bit B_PAD_START, a
@@ -251,7 +252,7 @@ OverworldLoopLessDelay::
 	call StepCountCheck
 	CheckEvent EVENT_IN_SAFARI_ZONE
 	jr z, .notSafariZone
-	farcall SafariZoneCheckSteps
+	predef SafariZoneCheckSteps
 	ld a, [wSafariZoneGameOver]
 	and a
 	jp nz, WarpFound2
