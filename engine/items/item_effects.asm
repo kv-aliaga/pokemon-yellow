@@ -710,6 +710,7 @@ ItemUseSurfboard:
 	ld a, 2
 	ld [wWalkBikeSurfState], a ; change player state to surfing
 	call PlayDefaultMusic ; play surfing music
+	call GetPartyMonName2
 	ld hl, SurfingGotOnText
 	jp PrintText
 
