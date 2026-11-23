@@ -271,7 +271,7 @@ TryWalking:
 	jp UpdateSpriteImage
 
 ; Advance the player animation twice per frame while B is held on foot and
-; three times per frame while biking. Tile arrival and its usual checks still
+; four times per frame while biking. Tile arrival and its usual checks still
 ; happen once.
 AdvancePlayerSpriteWithRunning::
 	ld a, [wWalkBikeSurfState]
@@ -294,8 +294,8 @@ AdvancePlayerSpriteWithRunning::
 	ret z
 	jr .advance
 .onBike
-	; Bike movement advances three animation frames per game frame. The
-	; earlier DoBikeSpeedup call already advanced once; add at most two more.
+	; Bike movement advances four animation frames per game frame. The
+	; earlier DoBikeSpeedup call already advanced once; add at most three more.
 	ld a, [wMovementFlags]
 	bit BIT_LEDGE_OR_FISHING, a
 	jr nz, .advance
@@ -305,6 +305,10 @@ AdvancePlayerSpriteWithRunning::
 	ld a, [wWalkCounter]
 	and a
 	ret z ; DoBikeSpeedup reached the next tile this frame
+	call AdvancePlayerSprite
+	ld a, [wWalkCounter]
+	and a
+	ret z
 	call AdvancePlayerSprite
 	ld a, [wWalkCounter]
 	and a

@@ -219,6 +219,8 @@ DisplayRepelWoreOffText::
 
 DisplayBicycleToggleText::
 	call ItemUseBicycle
+	xor a
+	ldh [hJoyPressed], a ; don't replay the A/B press that dismissed the bicycle text
 	jp CloseTextDisplay
 
 DisplayPikachuEmotion::

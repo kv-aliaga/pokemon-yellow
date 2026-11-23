@@ -322,7 +322,7 @@ AllPokemonFainted::
 	call RunMapScript
 	jp HandleBlackOut
 
-; first of three animation advances for normal bicycle movement
+; first of four animation advances for normal bicycle movement
 DoBikeSpeedup::
 	ld a, [wWalkBikeSurfState]
 	dec a ; riding a bike?
