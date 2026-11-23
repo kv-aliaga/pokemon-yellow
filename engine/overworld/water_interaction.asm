@@ -1,4 +1,7 @@
 CheckWaterInteraction::
+	ld a, [wWalkBikeSurfState]
+	cp 2 ; already surfing
+	ret z
 	predef GetTileAndCoordsInFrontOfPlayer
 	lda_coord 8, 9 ; tile the player is standing on
 	ld [wTilePlayerStandingOn], a
