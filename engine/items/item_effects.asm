@@ -654,7 +654,7 @@ ItemUseTownMap:
 	jp nz, ItemUseNotTime
 	farjp DisplayTownMap
 
-ItemUseBicycle:
+ItemUseBicycle::
 	ld a, [wIsInBattle]
 	and a
 	jp nz, ItemUseNotTime
@@ -719,18 +719,16 @@ TryBicycleSelectShortcut::
 	ld [wNamedObjectIndex], a
 	call GetItemName
 	call CopyToStringBuffer
-	call ItemUseBicycle ; reuse the existing transition, sprite, and music setup
+	ld a, TEXT_BICYCLE_TOGGLE
+	ldh [hTextID], a
+	ld hl, wTextPredefFlag
+	set BIT_TEXT_PREDEF, [hl] ; keep the item-effects bank for this special text dispatch
 	xor a
 	ldh [hJoyPressed], a ; consume SELECT and any simultaneous button press
-	; Unlike the Bag path, this shortcut has no DisplayTextID caller to close
-	; the prompt and reload player graphics after ItemUseBicycle prints it.
 	pop hl
 	pop de
 	pop bc
-	ldh a, [hLoadedROMBank]
-	push af ; CloseTextDisplay restores the bank saved by DisplayTextID
-	call LoadTextBoxTilePatterns
-	jp CloseTextDisplay
+	jp DisplayTextID
 .notHandled
 	and a
 	; .done preserves registers used by the overworld input loop.
