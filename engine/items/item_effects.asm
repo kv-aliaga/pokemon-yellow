@@ -654,7 +654,7 @@ ItemUseTownMap:
 	jp nz, ItemUseNotTime
 	farjp DisplayTownMap
 
-ItemUseBicycle:
+ItemUseBicycle::
 	ld a, [wIsInBattle]
 	and a
 	jp nz, ItemUseNotTime
@@ -689,6 +689,53 @@ ItemUseBicycle:
 	call PrintText
 	ld a, $1
 	ld [wWalkBikeSurfState], a
+	ret
+
+TryBicycleSelectShortcut::
+	call GetPredefRegisters
+	push bc
+	push de
+	push hl
+	ldh a, [hJoyPressed]
+	bit B_PAD_SELECT, a
+	jr z, .notHandled
+	ldh a, [hJoyHeld]
+	and PAD_CTRL_PAD
+	jr nz, .notHandled ; require the player to be stationary
+	ld a, [wWalkBikeSurfState]
+	cp 2 ; ignore SELECT while surfing
+	jr z, .notHandled
+	ld a, [wStatusFlags6]
+	bit BIT_ALWAYS_ON_BIKE, a
+	jr nz, .notHandled ; preserve forced-bike maps
+	ld b, BICYCLE
+	call IsItemInBag
+	jr z, .notHandled
+	call IsBikeRidingAllowed
+	jr nc, .notHandled
+	; The Bag item flow fills wStringBuffer with the item name before use.
+	; Bicycle messages read that buffer, so reproduce the same setup here.
+	ld a, BICYCLE
+	ld [wNamedObjectIndex], a
+	call GetItemName
+	call CopyToStringBuffer
+	ld a, TEXT_BICYCLE_TOGGLE
+	ldh [hTextID], a
+	ld hl, wTextPredefFlag
+	set BIT_TEXT_PREDEF, [hl] ; keep the item-effects bank for this special text dispatch
+	xor a
+	ldh [hJoyPressed], a ; consume SELECT and any simultaneous button press
+	pop hl
+	pop de
+	pop bc
+	jp DisplayTextID
+.notHandled
+	and a
+	; .done preserves registers used by the overworld input loop.
+.done
+	pop hl
+	pop de
+	pop bc
 	ret
 
 ; indirectly used by SURF in StartMenu_Pokemon.surf

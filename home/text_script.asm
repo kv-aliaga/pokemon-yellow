@@ -32,6 +32,7 @@ DisplayTextID::
 	dict TEXT_MON_FAINTED,      DisplayPokemonFaintedText
 	dict TEXT_BLACKED_OUT,      DisplayPlayerBlackedOutText
 	dict TEXT_REPEL_WORE_OFF,   DisplayRepelWoreOffText
+	dict TEXT_BICYCLE_TOGGLE,   DisplayBicycleToggleText
 
 	ld a, [wNumSprites]
 	ld e, a
@@ -215,6 +216,12 @@ DisplayRepelWoreOffText::
 	farcall DisplayRepelExpiryFlow
 	jp c, CloseTextDisplay ; the Yes/No input also dismisses both messages
 	jp AfterDisplayingTextID
+
+DisplayBicycleToggleText::
+	call ItemUseBicycle
+	xor a
+	ldh [hJoyPressed], a ; don't replay the A/B press that dismissed the bicycle text
+	jp CloseTextDisplay
 
 DisplayPikachuEmotion::
 	callfar TalkToPikachu
