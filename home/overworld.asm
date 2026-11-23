@@ -81,7 +81,7 @@ OverworldLoopLessDelay::
 	jr .displayDialogue
 .startButtonNotPressed
 	bit B_PAD_A, a
-	jr z, .checkIfDownButtonIsPressed
+	jp z, .checkIfDownButtonIsPressed
 ; if A is pressed
 	ld a, [wStatusFlags5]
 	bit BIT_UNKNOWN_5_2, a
@@ -98,7 +98,9 @@ OverworldLoopLessDelay::
 	call IsPlayerTalkingToPikachu
 	ldh a, [hTextID]
 	and a
-	jp z, OverworldLoop
+	jr nz, .displayDialogue
+	callfar CheckWaterInteraction
+	jp OverworldLoop
 .displayDialogue
 	predef GetTileAndCoordsInFrontOfPlayer
 	call UpdateSprites
