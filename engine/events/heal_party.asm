@@ -176,14 +176,14 @@ HealBoxedPokemon:
 	ld bc, sBank2AllBoxesChecksum - sBox1
 	call CalcSavedBoxChecksum
 	ld [sBank2AllBoxesChecksum], a
-	homecall CalcIndividualBoxCheckSums
+	callfar CalcIndividualBoxCheckSums
 	ld a, BANK("Saved Boxes 2")
 	ld [rRAMB], a
 	ld hl, sBox1
 	ld bc, sBank2AllBoxesChecksum - sBox1
 	call CalcSavedBoxChecksum
 	ld [sBank2AllBoxesChecksum], a
-	homecall CalcIndividualBoxCheckSums
+	callfar CalcIndividualBoxCheckSums
 	callfar DisableSRAM
 
 	; Restore the active WRAM copy and refresh its main-save checksum.
@@ -215,18 +215,18 @@ HealBoxedPokemon:
 	ret
 
 CalcSavedBoxChecksum:
-	; CalcCheckSum needs HL/BC as inputs and returns its checksum in A.
-	; Keep the result while restoring this code's ROM bank afterward.
-	ldh a, [hLoadedROMBank]
-	push af
-	ld a, BANK(CalcCheckSum)
-	call BankswitchCommon
-	call CalcCheckSum
-	push af
-	pop bc
-	pop af
-	call BankswitchCommon
-	ld a, c
+	; Same checksum as CalcCheckSum, computed here to stay in this ROM bank.
+	ld d, 0
+.loop
+	ld a, [hli]
+	add d
+	ld d, a
+	dec bc
+	ld a, b
+	or c
+	jr nz, .loop
+	ld a, d
+	cpl
 	ret
 
 GetHealBoxSRAMLocation:
