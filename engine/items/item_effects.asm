@@ -722,7 +722,15 @@ TryBicycleSelectShortcut::
 	call ItemUseBicycle ; reuse the existing transition, sprite, and music setup
 	xor a
 	ldh [hJoyPressed], a ; consume SELECT and any simultaneous button press
-	jr .done
+	; Unlike the Bag path, this shortcut has no DisplayTextID caller to close
+	; the prompt and reload player graphics after ItemUseBicycle prints it.
+	pop hl
+	pop de
+	pop bc
+	ldh a, [hLoadedROMBank]
+	push af ; CloseTextDisplay restores the bank saved by DisplayTextID
+	call LoadTextBoxTilePatterns
+	jp CloseTextDisplay
 .notHandled
 	and a
 	; .done preserves registers used by the overworld input loop.
