@@ -6,6 +6,9 @@ DisplayTextIDInit::
 	bit BIT_NO_AUTO_TEXT_BOX, a
 	jr nz, .skipDrawingTextBoxBorder
 	ldh a, [hTextID]
+	cp TEXT_BICYCLE_TOGGLE
+	jr z, .skipDrawingTextBoxBorder ; bicycle transition redraws the map before its message
+	ldh a, [hTextID]
 	and a
 	jr nz, .notStartMenu
 ; if text ID is 0 (i.e. the start menu)
