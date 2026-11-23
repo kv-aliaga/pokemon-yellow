@@ -58,11 +58,11 @@
       "location": "Rocket Hideout B4F",
       "event": "Encontro estático após Giovanni",
       "player_gives": null,
-      "player_receives": "Ditto",
+      "player_receives": {"pokemon": "Ditto", "level": 24, "original_trainer": "Giovanni"},
       "requirements": ["Após derrotar Giovanni"],
-      "source_ref": "v1-wild-encounter-plan.md:5,79",
+      "source_ref": "v1-wild-encounter-plan.md:5,79; user clarification, 2026-11-23",
       "status": "aprovado",
-      "notes": "Decisão final do plano. Nível não especificado; pendente."
+      "notes": "O Ditto que aguardava Giovanni no Rocket Hideout B4F é recuperado como presente de nível 24, com OT Giovanni; permanece disponível se a equipe e a Box estiverem cheias."
     },
     {
       "id": "fossil-rematch-dome",

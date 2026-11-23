@@ -19,6 +19,7 @@ RocketHideoutB4F_Object:
 	warp_event 25, 15, ROCKET_HIDEOUT_ELEVATOR, 2
 
 	def_bg_events
+	bg_event 25,  5, TEXT_ROCKETHIDEOUTB4F_GIOVANNI_AT_DESK
 
 	def_object_events
 	object_event 25,  3, SPRITE_GIOVANNI, STAY, DOWN, TEXT_ROCKETHIDEOUTB4F_GIOVANNI, OPP_GIOVANNI, 1

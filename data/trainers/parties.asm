@@ -537,7 +537,7 @@ ScientistData:
 
 GiovanniData:
 ; Rocket Hideout B4F
-	db $FF, 25, ONIX, 24, RHYHORN, 29, PERSIAN, 0
+	db $FF, 25, ONIX, 24, RHYHORN, 29, PERSIAN, 24, DITTO, 0
 ; Silph Co. 11F
 	db $FF, 37, NIDORINO, 35, PERSIAN, 37, RHYHORN, 41, NIDOQUEEN, 0
 ; Viridian Gym

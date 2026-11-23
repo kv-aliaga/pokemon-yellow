@@ -47,7 +47,8 @@ _SSAnneKitchenCook7MainCourseIsText::
 	prompt
 
 SSAnneKitchenCook7SalmonDuSaladText::
-	text "Salade de Salmon!"
+	text "Salade de"
+	line "Tatsugiri!"
 
 	para "Les guests may"
 	line "gripe it's fish"
@@ -55,15 +56,17 @@ SSAnneKitchenCook7SalmonDuSaladText::
 	done
 
 SSAnneKitchenCook7EelsAuBarbecueText::
-	text "Eels au Barbecue!"
+	text "Eelektrik au"
+	line "Barbecue!"
 
 	para "Les guests will"
 	line "mutiny, I fear."
 	done
 
 SSAnneKitchenCook7PrimeBeefSteakText::
-	text "Prime Beef Steak!"
+	text "Prime Tauros"
+	line "Steak!"
 
 	para "But, have I enough"
-	line "fillets du beef?"
+	line "Tauros fillets?"
 	done

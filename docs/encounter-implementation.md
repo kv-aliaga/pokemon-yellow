@@ -36,7 +36,7 @@ The three city trades use level 25, consistent with the pre-Koga trainer progres
 
 ### Ditto and fossils
 
-- The Rocket Hideout B4F Ditto is level 24, anchored to the planned level 24 Ditto encounter in Pokémon Mansion B1F. Its interaction is enabled after Giovanni is defeated.
+- The Rocket Hideout B4F Ditto is level 24 and is recovered as a gift after Giovanni is defeated, with Giovanni as its OT. If the party and current Box are full, it remains available. Giovanni uses a level 24 Ditto in his Rocket Hideout B4F battle; his Silph Co. team has no Ditto.
 - The Pewter Museum Super Nerd rematch unlocks after Lt. Surge. If the player chose Helix Fossil, the opposing team includes Kabuto and the reward is Dome Fossil. If the player chose Dome Fossil, the team includes Omanyte and the reward is Helix Fossil. The two fossil team members are level 25, matching the post-Surge progression.
 - The new Pewter revival station uses the existing level 30 fossil revival flow and shares its save state with Cinnabar. Old Amber can be processed in Pewter after the player obtains HM01/Cut. Cinnabar remains available as before.
 

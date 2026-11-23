@@ -278,7 +278,7 @@ ToggleableObjectStates:
 	toggle_object_state ROCKETHIDEOUTB4F_IRON,          ON
 	toggle_object_state ROCKETHIDEOUTB4F_SILPH_SCOPE,   OFF
 	toggle_object_state ROCKETHIDEOUTB4F_LIFT_KEY,      OFF
-	toggle_object_state ROCKETHIDEOUTB4F_DITTO,         ON
+	toggle_object_state ROCKETHIDEOUTB4F_DITTO,         OFF
 
 	toggleable_objects_for SILPH_CO_2F
 	toggle_object_state SILPHCO2F_SILPH_WORKER_F, ON

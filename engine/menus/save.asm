@@ -63,7 +63,7 @@ LoadMainData:
 	ld bc, wMainDataEnd - wMainDataStart
 	call CopyData
 	ld hl, wCurMapTileset
-	set BIT_NO_PREVIOUS_MAP, [hl]
+	res BIT_NO_PREVIOUS_MAP, [hl] ; reload map header pointers from the current ROM after continuing
 	ld hl, sSpriteData
 	ld de, wSpriteDataStart
 	ld bc, wSpriteDataEnd - wSpriteDataStart
