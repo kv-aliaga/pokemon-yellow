@@ -243,7 +243,7 @@ OverworldLoopLessDelay::
 	xor a
 	ld [wPikachuCollisionCounter], a
 	call DoBikeSpeedup
-	call AdvancePlayerSprite
+	callfar AdvancePlayerSpriteWithRunning
 	ld a, [wWalkCounter]
 	and a
 	jp nz, CheckMapConnections ; it seems like this check will never succeed (the other place where CheckMapConnections is run works)

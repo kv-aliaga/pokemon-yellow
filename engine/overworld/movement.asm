@@ -270,6 +270,29 @@ TryWalking:
 	ld [hl], MOVEMENTSTATUS_ANIM ; x#SPRITESTATEDATA1_MOVEMENTSTATUS
 	jp UpdateSpriteImage
 
+; Advance the player animation twice per frame while B is held during normal
+; on-foot movement. Tile arrival and its usual checks still happen once.
+AdvancePlayerSpriteWithRunning::
+	ld a, [wWalkBikeSurfState]
+	and a
+	jr nz, .advance
+	call IsPlayerCharacterBeingControlledByGame
+	jr nz, .advance
+	ld a, [wJoyIgnore]
+	bit B_PAD_B, a
+	jr nz, .advance
+	ldh a, [hJoyInput]
+	bit B_PAD_B, a
+	jr z, .advance
+	call AdvancePlayerSprite
+	ld a, [wWalkCounter]
+	and a
+	jr z, .done
+.advance
+	call AdvancePlayerSprite
+.done
+	ret
+
 ; update the walking animation parameters for a sprite that is currently walking
 UpdateSpriteInWalkingAnimation:
 	call AdvanceScriptedNPCIntraAnimFrameCounter

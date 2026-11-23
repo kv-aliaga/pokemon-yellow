@@ -516,6 +516,18 @@ PikachuMovementState_ProcessCommand:
 	jp z, PikachuDoubleStep
 	call AreThereAtLeastTwoStepsInPikachuFollowCommandBuffer
 	jp c, FastPikachuFollow
+	ld a, [wWalkBikeSurfState]
+	and a
+	jr nz, .normalFollow
+	call IsPlayerCharacterBeingControlledByGame
+	jr nz, .normalFollow
+	ld a, [wJoyIgnore]
+	bit B_PAD_B, a
+	jr nz, .normalFollow
+	ldh a, [hJoyInput]
+	bit B_PAD_B, a
+	jp nz, FastPikachuFollow
+.normalFollow
 	jp NormalPikachuFollow
 
 PikachuMovementCommandData:
