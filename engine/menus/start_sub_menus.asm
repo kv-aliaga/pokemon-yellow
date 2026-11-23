@@ -171,35 +171,10 @@ StartMenu_Pokemon::
 	jp CloseTextDisplay
 
 .surf
-	bit BIT_SOULBADGE, a
-	jp z, .newBadgeRequired
-	farcall IsSurfingAllowed
-	ld hl, wStatusFlags1
-	bit BIT_SURF_ALLOWED, [hl]
-	res BIT_SURF_ALLOWED, [hl]
-	jp z, .loop
-	ld a, [wCurPartySpecies]
-	cp STARTER
-	jr z, .surfingPikachu
-	ld a, PLAYER_SURF
-	jr .continueSurf
-.surfingPikachu
-	ld a, PLAYER_SURF_PIKA
-.continueSurf
-	ld [wPlayerState], a
-	ld a, SURFBOARD
-	ld [wCurItem], a
-	ld [wPseudoItemID], a
-	call UseItem
-	ld a, [wActionResultOrTookBattleTurn]
-	and a
-	jr z, .reloadNormalSprite
+	call TryStartSurf
+	jp nc, .loop
 	call GBPalWhiteOutWithDelay3
 	jp .goBackToMap
-.reloadNormalSprite
-	xor a ; PLAYER_NORMAL
-	ld [wPlayerState], a
-	jp .loop
 
 .strength
 	bit BIT_RAINBOWBADGE, a
@@ -322,6 +297,49 @@ StartMenu_Pokemon::
 .newBadgeRequiredText
 	text_far _NewBadgeRequiredText
 	text_end
+
+; Starts Surf using the currently selected party Pokémon.
+; Returns carry set if Surf started, clear if it was denied or failed.
+TryStartSurf::
+	ld a, [wObtainedBadges]
+	bit BIT_SOULBADGE, a
+	jr nz, .checkSurfingAllowed
+	ld hl, StartMenu_Pokemon.newBadgeRequiredText
+	call PrintText
+	and a
+	ret
+.checkSurfingAllowed
+	farcall IsSurfingAllowed
+	ld hl, wStatusFlags1
+	bit BIT_SURF_ALLOWED, [hl]
+	res BIT_SURF_ALLOWED, [hl]
+	jr z, .denied
+	ld a, [wCurPartySpecies]
+	cp STARTER
+	jr z, .surfingPikachu
+	ld a, PLAYER_SURF
+	jr .continueSurf
+.surfingPikachu
+	ld a, PLAYER_SURF_PIKA
+.continueSurf
+	ld [wPlayerState], a
+	ld a, SURFBOARD
+	ld [wCurItem], a
+	ld [wPseudoItemID], a
+	call UseItem
+	ld a, [wActionResultOrTookBattleTurn]
+	and a
+	jr z, .failed
+	scf
+	ret
+.failed
+	xor a ; PLAYER_NORMAL
+	ld [wPlayerState], a
+	and a ; clear carry
+	ret
+.denied
+	and a ; clear carry
+	ret
 
 ; writes a blank tile to all possible menu cursor positions on the party menu
 ErasePartyMenuCursors::

@@ -423,3 +423,8 @@ INCLUDE "engine/pikachu/pikachu_emotions.asm"
 INCLUDE "engine/pikachu/pikachu_movement.asm"
 INCLUDE "engine/pikachu/pikachu_pic_animation.asm"
 INCLUDE "engine/debug/debug_menu.asm"
+
+
+SECTION "Water Interaction", ROMX
+
+INCLUDE "engine/overworld/water_interaction.asm"
