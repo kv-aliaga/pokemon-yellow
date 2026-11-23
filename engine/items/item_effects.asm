@@ -672,7 +672,7 @@ ItemUseBicycle::
 	ld [wPikachuSpawnState], a
 	call PlayDefaultMusic ; play walking music
 	ld hl, GotOffBicycleText
-	jp PrintText
+	jp .printBicycleText
 
 .tryToGetOnBike
 	call IsBikeRidingAllowed
@@ -686,10 +686,16 @@ ItemUseBicycle::
 	xor a
 	ld [wWalkBikeSurfState], a
 	ld hl, GotOnBicycleText
-	call PrintText
+	call .printBicycleText
 	ld a, $1
 	ld [wWalkBikeSurfState], a
 	ret
+
+.printBicycleText
+	ldh a, [hTextID]
+	cp TEXT_BICYCLE_TOGGLE
+	jp z, PrintText_NoCreatingTextBox ; the dispatch already opened the message window
+	jp PrintText
 
 TryBicycleSelectShortcut::
 	call GetPredefRegisters
