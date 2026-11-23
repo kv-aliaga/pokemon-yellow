@@ -99,6 +99,10 @@ DisplayRepelExpiryFlow::
 	jr z, .noRepel
 	ld hl, RepelWoreOffText
 	call PrintText
+	; The replacement question is shorter; clear leftover characters from the notice.
+	hlcoord 1, 14
+	lb bc, 3, 18
+	call ClearScreenArea
 	call RepelReplacementPrompt
 	scf ; the Yes/No choice consumed the button press
 	ret
