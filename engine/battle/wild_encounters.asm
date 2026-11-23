@@ -187,12 +187,12 @@ GetStrongestRepelInBag:
 
 RepelAgainText::
 	text "Use another"
-	line "REPEL?"
+	line "REPEL?@"
 	text_end
 
 RepelWoreOffText::
 	text "REPEL's effect"
-	line "wore off."
+	line "wore off.@"
 	text_end
 
 INCLUDE "data/wild/probabilities.asm"
