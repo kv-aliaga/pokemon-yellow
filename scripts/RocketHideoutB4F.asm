@@ -83,7 +83,15 @@ ENDC
 
 RocketHideoutB4FEnsureDittoAvailable:
 	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_GIOVANNI
-	ret z
+	jr nz, .afterGiovanni
+	CheckEvent EVENT_ROCKET_HIDEOUT_DITTO_PRE_BATTLE_HIDE
+	ret nz
+	SetEvent EVENT_ROCKET_HIDEOUT_DITTO_PRE_BATTLE_HIDE
+	ld a, TOGGLE_ROCKET_HIDEOUT_B4F_DITTO
+	ld [wToggleableObjectIndex], a
+	predef HideObject
+	ret
+.afterGiovanni
 	CheckEvent EVENT_GOT_ROCKET_HIDEOUT_DITTO
 	ret nz
 	CheckEvent EVENT_ROCKET_HIDEOUT_DITTO_AVAILABLE
