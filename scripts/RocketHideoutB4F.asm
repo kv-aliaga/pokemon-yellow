@@ -74,10 +74,24 @@ IF DEF(_DEBUG)
 	call DebugPressedOrHeldB
 	ret nz
 ENDC
+	call RocketHideoutB4FEnsureDittoAvailable
 	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_4_JESSIE_JAMES
 	call z, RocketHideoutB4FEncounterJessieJamesScript
 	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_4_TRAINER_2
 	call z, CheckFightingMapTrainers
+	ret
+
+RocketHideoutB4FEnsureDittoAvailable:
+	CheckEvent EVENT_BEAT_ROCKET_HIDEOUT_GIOVANNI
+	ret z
+	CheckEvent EVENT_GOT_ROCKET_HIDEOUT_DITTO
+	ret nz
+	CheckEvent EVENT_ROCKET_HIDEOUT_DITTO_AVAILABLE
+	ret nz
+	SetEvent EVENT_ROCKET_HIDEOUT_DITTO_AVAILABLE
+	ld a, TOGGLE_ROCKET_HIDEOUT_B4F_DITTO
+	ld [wToggleableObjectIndex], a
+	predef ShowObject
 	ret
 
 RocketHideoutB4FEncounterJessieJamesScript:
@@ -423,25 +437,48 @@ RocketHideoutB4FDittoText:
 	call PrintText
 	jp TextScriptEnd
 .afterGiovanni
-	ld hl, DittoTrainerHeader
-	call TalkToTrainer
+	ld hl, .DittoWaitingText
+	call PrintText
+	lb bc, DITTO, 24
+	call GivePokemon
+	jr nc, .done
+	ld a, [wAddedToParty]
+	and a
+	jr z, .sentToBox
+	ld hl, wPartyMonOT
+	ld a, [wPartyCount]
+	dec a
+	call SkipFixedLengthTextEntries
+	ld d, h
+	ld e, l
+	ld hl, .GiovanniOT
+	jr .setOT
+.sentToBox
+	ld hl, .GiovanniOT
+	ld de, wBoxMon1OT
+.setOT
+	ld bc, NAME_LENGTH
+	call CopyData
+	SetEvent EVENT_GOT_ROCKET_HIDEOUT_DITTO
+	SetEvent EVENT_BEAT_ROCKET_HIDEOUT_DITTO
+	ld a, TOGGLE_ROCKET_HIDEOUT_B4F_DITTO
+	ld [wToggleableObjectIndex], a
+	predef HideObject
+.done
 	jp TextScriptEnd
 
 .GiovanniStillHereText:
-	text "A strange POKéMON is"
-	line "waiting for Giovanni."
+	text "A strange POKéMON"
+	line "is waiting for"
+	cont "Giovanni."
 	prompt
 	text_end
 
-DittoTrainerHeader:
-	trainer EVENT_BEAT_ROCKET_HIDEOUT_DITTO, 0, DittoBattleText, DittoBattleText, DittoBattleText
-	db -1
+.DittoWaitingText:
+	text "This DITTO is"
+	line "waiting for you!"
+	prompt
+	text_end
 
-DittoBattleText:
-	text "The POKéMON watches"
-	line "you closely!@"
-	text_asm
-	ld a, DITTO
-	call PlayCry
-	call WaitForSoundToFinish
-	jp TextScriptEnd
+.GiovanniOT
+	db "GIOVANNI@", 0, 0
