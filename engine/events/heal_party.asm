@@ -260,7 +260,7 @@ HealBoxData:
 	ret z ; uninitialized and empty boxes have a zero count
 	xor a
 	ld [wWhichPokemon], a
-	ld hl, wBoxSpecies + 1
+	ld hl, wBoxSpecies
 .monLoop
 	ld a, [hli]
 	cp $ff
