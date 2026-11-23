@@ -270,12 +270,16 @@ TryWalking:
 	ld [hl], MOVEMENTSTATUS_ANIM ; x#SPRITESTATEDATA1_MOVEMENTSTATUS
 	jp UpdateSpriteImage
 
-; Advance the player animation twice per frame while B is held during normal
-; on-foot movement. Tile arrival and its usual checks still happen once.
+; Advance the player animation twice per frame while B is held on foot and
+; three times per frame while biking. Tile arrival and its usual checks still
+; happen once.
 AdvancePlayerSpriteWithRunning::
 	ld a, [wWalkBikeSurfState]
+	cp 1 ; bike
+	jr z, .onBike
 	and a
-	jr nz, .advance
+	jr nz, .advance ; surfing keeps its existing movement rate
+.onFoot
 	call IsPlayerCharacterBeingControlledByGame
 	jr nz, .advance
 	ld a, [wJoyIgnore]
@@ -287,10 +291,28 @@ AdvancePlayerSpriteWithRunning::
 	call AdvancePlayerSprite
 	ld a, [wWalkCounter]
 	and a
-	jr z, .done
+	ret z
+	jr .advance
+.onBike
+	; Bike movement advances three animation frames per game frame. The
+	; earlier DoBikeSpeedup call already advanced once; add at most two more.
+	ld a, [wMovementFlags]
+	bit BIT_LEDGE_OR_FISHING, a
+	jr nz, .advance
+	ld a, [wNPCMovementScriptPointerTableNum]
+	and a
+	jr nz, .advance
+	ld a, [wWalkCounter]
+	and a
+	ret z ; DoBikeSpeedup reached the next tile this frame
+	call AdvancePlayerSprite
+	ld a, [wWalkCounter]
+	and a
+	ret z
+	call AdvancePlayerSprite
+	ret
 .advance
 	call AdvancePlayerSprite
-.done
 	ret
 
 ; update the walking animation parameters for a sprite that is currently walking

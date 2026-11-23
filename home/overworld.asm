@@ -322,7 +322,7 @@ AllPokemonFainted::
 	call RunMapScript
 	jp HandleBlackOut
 
-; function to make bikes twice as fast as walking
+; first of three animation advances for normal bicycle movement
 DoBikeSpeedup::
 	ld a, [wWalkBikeSurfState]
 	dec a ; riding a bike?
@@ -333,13 +333,6 @@ DoBikeSpeedup::
 	ld a, [wNPCMovementScriptPointerTableNum]
 	and a
 	ret nz
-	ld a, [wCurMap]
-	cp ROUTE_17 ; Cycling Road
-	jr nz, .goFaster
-	ldh a, [hJoyHeld]
-	and PAD_UP | PAD_LEFT | PAD_RIGHT
-	ret nz
-.goFaster
 	call AdvancePlayerSprite
 	ret
 
