@@ -5,7 +5,8 @@
 	const OPT_BATTLE_STYLE ; 2
 	const OPT_SOUND        ; 3
 	const OPT_PRINTER      ; 4
-	const_skip 2
+	const OPT_EXP_SHARE    ; 5
+	const_skip 1
 	const OPT_CANCEL       ; 7
 DEF NUM_OPTIONS EQU const_value ; 8
 
@@ -47,7 +48,7 @@ OptionMenuJumpTable:
 	dw OptionsMenu_BattleStyle
 	dw OptionsMenu_SpeakerSettings
 	dw OptionsMenu_GBPrinterBrightness
-	dw OptionsMenu_Dummy
+	dw OptionsMenu_ExpShare
 	dw OptionsMenu_Dummy
 	dw OptionsMenu_Cancel
 
@@ -344,6 +345,36 @@ OptionsMenu_GBPrinterBrightness:
 .Darker:   db "DARKER  @"
 .Darkest:  db "DARKEST @"
 
+OptionsMenu_ExpShare:
+	ldh a, [hJoy5]
+	and PAD_LEFT | PAD_RIGHT
+	jr nz, .buttonPressed
+	ld a, [wOptions]
+	bit BIT_EXP_SHARE, a
+	jr nz, .enabled
+	ld de, .Off
+	jr .print
+
+.buttonPressed
+	ld a, [wOptions]
+	xor 1 << BIT_EXP_SHARE
+	ld [wOptions], a
+	bit BIT_EXP_SHARE, a
+	jr nz, .enabled
+	ld de, .Off
+	jr .print
+
+.enabled
+	ld de, .On
+.print
+	hlcoord 14, 12
+	call PlaceString
+	and a ; clear carry flag
+	ret
+
+.On:  db "ON @"
+.Off: db "OFF@"
+
 ; Loads the value of the current selection in c
 ; Loads the brightness value of the options
 ; to the left in d and to the right in e
@@ -414,9 +445,9 @@ OptionsControl:
 	scf
 	ret
 .doNotWrap
-	cp OPT_PRINTER ; skip the next two dummy options
+	cp OPT_EXP_SHARE ; skip the unused slot before Cancel
 	jr c, .increase
-	ld [hl], OPT_CANCEL - 1 ; Cancel is after Print
+	ld [hl], OPT_CANCEL - 1 ; step past the unused slot to Cancel
 .increase
 	inc [hl]
 	scf
@@ -424,9 +455,9 @@ OptionsControl:
 
 .pressedUp
 	ld a, [hl]
-	cp OPT_CANCEL ; skip the previous two dummy options
+	cp OPT_CANCEL ; skip the unused slot before Cancel
 	jr nz, .doNotSkip
-	ld [hl], OPT_PRINTER ; Print is before Cancel
+	ld [hl], OPT_EXP_SHARE ; EXP Share is before Cancel
 	scf
 	ret
 .doNotSkip
@@ -466,7 +497,7 @@ InitOptionsMenu:
 	call PlaceString
 	xor a
 	ld [wOptionsCursorLocation], a
-	ld c, 5 ; the number of options to loop through
+	ld c, 6 ; the number of options to loop through
 .loop
 	push bc
 	call GetOptionPointer ; updates the next option
@@ -487,7 +518,8 @@ AllOptionsText:
 	next "ANIMATION  :"
 	next "BATTLESTYLE:"
 	next "SOUND:"
-	next "PRINT:@"
+	next "PRINT:"
+	next "EXP SHARE:@"
 
 OptionMenuCancelText:
 	db "CANCEL@"

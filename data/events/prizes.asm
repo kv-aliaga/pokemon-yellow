@@ -29,12 +29,10 @@ PrizeMenuMon2Cost:
 
 PrizeMenuTMsEntries:
 	db TM_DRAGON_RAGE
-	db TM_HYPER_BEAM
 	db TM_SUBSTITUTE
 	db "@"
 
 PrizeMenuTMsCost:
 	bcd2 3300
-	bcd2 5500
 	bcd2 7700
 	db "@"

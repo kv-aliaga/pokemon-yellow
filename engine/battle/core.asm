@@ -823,52 +823,87 @@ FaintEnemyPokemon:
 	call PrintEmptyString
 	call SaveScreenTilesToBuffer1
 	xor a
+	ld [wExpShareNonParticipants], a
 	ld [wBattleResult], a
-	ld b, EXP_ALL
-	call IsItemInBag
-	push af
-	jr z, .giveExpToMonsThatFought ; if no exp all, then jump
+	ld a, [wLinkState]
+	cp LINK_STATE_BATTLING
+	jr z, .giveExpToMonsThatFought ; link battles award no EXP and show no EXP Share text
+	ld a, [wOptions]
+	bit BIT_EXP_SHARE, a
+	jr z, .giveExpToMonsThatFought
+	call BuildExpShareNonParticipants
+	ld a, [wExpShareNonParticipants]
+	and a
+	jr z, .giveExpToMonsThatFought
 
-; the player has exp all
-; first, we halve the values that determine exp gain
-; the enemy mon base stats are added to stat exp, so they are halved
-; the base exp (which determines normal exp) is also halved
-	ld hl, wEnemyMonBaseStats
-	ld b, NUM_STATS + 2
-.halveExpDataLoop
-	srl [hl]
-	inc hl
-	dec b
-	jr nz, .halveExpDataLoop
-
-; give exp (divided evenly) to the mons that actually fought in battle against the enemy mon that has fainted
-; if exp all is in the bag, this will be only be half of the stat exp and normal exp, due to the above loop
+; Keep stat experience with combatants. Only the normal EXP basis is split.
+	ld a, [wEnemyMonBaseExp]
+	srl a
+	ld [wExpShareHalfBaseExp], a
+	ld [wEnemyMonBaseExp], a
 .giveExpToMonsThatFought
-	xor a
-	ld [wBoostExpByExpAll], a
 	callfar GainExperience
-	pop af
-	ret z ; return if no exp all
+	ld a, [wOptions]
+	bit BIT_EXP_SHARE, a
+	ret z
+	ld a, [wExpShareNonParticipants]
+	and a
+	ret z ; no eligible second group; combatants got all EXP
 
-; the player has exp all
-; now, set the gain exp flag for every party member
-; half of the total stat exp and normal exp will divided evenly amongst every party member
-	ld a, TRUE
-	ld [wBoostExpByExpAll], a
-	ld a, [wPartyCount]
-	ld b, 0
-.gainExpFlagsLoop
-	scf
-	rl b
-	dec a
-	jr nz, .gainExpFlagsLoop
-	ld a, b
+; The first call mutates the base values for its recipient count. Restore the
+; half EXP basis, then zero the base stats so reserves gain no stat experience.
+	ld a, [wExpShareHalfBaseExp]
+	ld [wEnemyMonBaseExp], a
+	xor a
+	ld hl, wEnemyMonBaseStats
+	ld b, NUM_STATS + 1 ; base stats and catch rate
+.clearStatsLoop
+	ld [hli], a
+	dec b
+	jr nz, .clearStatsLoop
+	ld a, [wExpShareNonParticipants]
 	ld [wPartyGainExpFlags], a
-	jpfar GainExperience
+	callfar PrintExpShareText
+	callfar GainExperience
+	ret
 
 EnemyMonFaintedText:
 	text_far _EnemyMonFaintedText
 	text_end
+
+; Build a mask of conscious party members that did not fight this opponent.
+BuildExpShareNonParticipants:
+	ld a, [wPartyFoughtCurrentEnemyFlags]
+	ld b, a
+	ld a, 1
+	ld d, a ; current party slot bit
+	xor a
+	ld e, a ; result mask
+	ld a, [wPartyCount]
+	ld c, a
+	ld hl, wPartyMon1
+.loop
+	inc hl ; skip level to the HP word
+	ld a, [hli]
+	or [hl]
+	jr z, .next ; fainted
+	ld a, b
+	and d
+	jr nz, .next ; fought this opponent
+	ld a, e
+	or d
+	ld e, a
+.next
+	sla d
+	push bc
+	ld bc, PARTYMON_STRUCT_LENGTH - 2
+	add hl, bc
+	pop bc
+	dec c
+	jr nz, .loop
+	ld a, e
+	ld [wExpShareNonParticipants], a
+	ret
 
 EndLowHealthAlarm:
 ; This function is called when the player has the won the battle. It turns off
@@ -1776,7 +1811,6 @@ SendOutMon:
 	ld hl, wBattleAndStartSavedMenuItem
 	ld [hli], a
 	ld [hl], a
-	ld [wBoostExpByExpAll], a
 	ld [wDamageMultipliers], a
 	ld [wPlayerMoveNum], a
 	ld hl, wPlayerUsedMove

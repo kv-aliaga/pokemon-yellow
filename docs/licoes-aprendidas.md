@@ -138,3 +138,17 @@ O primeiro link de `pokeyellow_debug.gbc` excedeu a seção fixa `Home` em 3 byt
 ### Evidência e limites
 
 O relato do jogador e a implementação de `PlaceString` confirmam a causa dos sufixos. A correção com strings de largura fixa compilou nas duas ROMs, mas não foi observada em gameplay nesta sessão. Reabra Options, alterne repetidamente `INSTANT` ↔ `FAST`, `MID` e `SLOW`, e confira também as voltas esquerda/direita para validar visualmente o tilemap.
+
+## FAQ: por que Instant digitava texto de batalha com EXP Share ligado?
+
+### Sintoma e causa confirmada
+
+Com `INSTANT` selecionado e EXP Share ligado, textos de batalha apareciam um caractere por vez. `PrintLetterDelay` lia `wOptions` com `and $f` para decidir a espera. A velocidade usa apenas `TEXT_DELAY_MASK` (`%000111`), mas `BIT_EXP_SHARE` ocupa o bit 3. Assim, Instant mais EXP Share produzia `$08`; a rotina interpretava esse bit alheio à velocidade como uma espera de oito quadros por caractere.
+
+### Correção e prevenção
+
+`PrintLetterDelay` agora aplica `TEXT_DELAY_MASK` ao valor de `wOptions`. A rotina comum é chamada por `PlaceString` e pela impressão de números, então a correção vale para os textos animados em batalha e fora dela. Ao acrescentar opções a `wOptions`, mantenha cada leitura de velocidade limitada ao `TEXT_DELAY_MASK`; não use a máscara de nibble `$f`, que inclui o bit do EXP Share.
+
+### Evidência e limites
+
+O contrato de máscara foi verificado antes e depois: com Instant e EXP Share, `$f` resultava em 8, enquanto `TEXT_DELAY_MASK` resulta em 0. As builds release e debug foram concluídas depois da correção. Não houve observação posterior em gameplay nesta sessão; compilação e checagem estática não comprovam a apresentação visual.

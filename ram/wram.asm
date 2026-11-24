@@ -551,8 +551,7 @@ NEXTU
 wSimulatedJoypadStatesEnd::
 
 NEXTU
-wUnusedFlag::
-wBoostExpByExpAll:: db
+wUnusedFlag:: db
 
 	ds 59
 
@@ -640,13 +639,17 @@ wMoveDidntMiss:: db
 ; flags that indicate which party members have fought the current enemy mon
 wPartyFoughtCurrentEnemyFlags:: flag_array PARTY_LENGTH
 
+; scratch data used to give the noncombatant half of EXP Share
+wExpShareNonParticipants:: db
+wExpShareHalfBaseExp:: db
+
 ; Whether the low health alarm has been disabled due to the player winning the
 ; battle.
 wLowHealthAlarmDisabled:: db
 
 wPlayerMonMinimized:: db
 
-	ds 13
+	ds 11
 
 UNION
 ; the amount of damage accumulated by the enemy while biding

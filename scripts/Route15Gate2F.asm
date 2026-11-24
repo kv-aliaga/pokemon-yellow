@@ -12,7 +12,7 @@ Route15Gate2FOaksAideText:
 	jr nz, .got_item
 	ld a, 50
 	ldh [hOaksAideRequirement], a
-	ld a, EXP_ALL
+	ld a, TM_HYPER_BEAM
 	ldh [hOaksAideRewardItem], a
 	ld [wNamedObjectIndex], a
 	call GetItemName
@@ -26,13 +26,13 @@ Route15Gate2FOaksAideText:
 	jr nz, .no_item
 	SetEvent EVENT_GOT_EXP_ALL
 .got_item
-	ld hl, .ExpAllText
+	ld hl, .HyperBeamText
 	call PrintText
 .no_item
 	jp TextScriptEnd
 
-.ExpAllText:
-	text_far _Route15Gate2FOaksAideExpAllText
+.HyperBeamText:
+	text_far _Route15Gate2FOaksAideHyperBeamText
 	text_end
 
 Route15Gate2FBinocularsText:

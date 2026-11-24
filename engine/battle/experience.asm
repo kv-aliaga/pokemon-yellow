@@ -143,11 +143,24 @@ GainExperience:
 	dec hl
 .next2
 	push hl
+	ld a, [wExpShareNonParticipants]
+	and a
+	jr z, .printGainedText
+	ld a, [wWhichPokemon]
+	ld c, a
+	ld b, FLAG_TEST
+	ld hl, wExpShareNonParticipants
+	predef FlagActionPredef
+	ld a, c
+	and a
+	jr nz, .skipGainedText ; shared EXP has one summary, not individual messages
+.printGainedText
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMonNicks
 	call GetPartyMonName
 	ld hl, GainedText
 	call PrintText
+.skipGainedText
 	xor a ; PLAYER_PARTY_DATA
 	ld [wMonDataLocation], a
 	call LoadMonData
@@ -267,6 +280,9 @@ GainExperience:
 	call SaveScreenTilesToBuffer1
 .printGrewLevelText
 	farcall_ModifyPikachuHappiness PIKAHAPPY_LEVELUP
+	ld a, [wWhichPokemon]
+	ld hl, wPartyMonNicks
+	call GetPartyMonName
 	ld hl, GrewLevelText
 	call PrintText
 	xor a ; PLAYER_PARTY_DATA
@@ -373,10 +389,6 @@ CallBattleCore:
 GainedText:
 	text_far _GainedText
 	text_asm
-	ld a, [wBoostExpByExpAll]
-	ld hl, WithExpAllText
-	and a
-	ret nz
 	ld hl, ExpPointsText
 	ld a, [wGainBoostedExp]
 	and a
@@ -384,11 +396,13 @@ GainedText:
 	ld hl, BoostedText
 	ret
 
-WithExpAllText:
-	text_far _WithExpAllText
-	text_asm
-	ld hl, ExpPointsText
-	ret
+PrintExpShareText:
+	ld hl, ExpShareText
+	jp PrintText
+
+ExpShareText:
+	text_far _ExpShareText
+	text_end
 
 BoostedText:
 	text_far _BoostedText
