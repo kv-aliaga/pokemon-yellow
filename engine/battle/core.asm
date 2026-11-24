@@ -2213,6 +2213,76 @@ DrawPlayerExpGauge:
 	ld [wBattleExpGaugeFilled], a
 .drawGauge
 	ld a, [wBattleExpGaugeFilled]
+	call DrawBattleExpGaugeFill
+	ld hl, wBuffer + 20
+	ld b, 21
+.restoreGaugeScratch
+	pop af
+	ld [hld], a
+	dec b
+	jr nz, .restoreGaugeScratch
+	ret
+
+; Compare the active mon's current EXP with the 24-bit big-endian value at hl.
+; Returns the same carry/zero flags as a three-byte unsigned comparison.
+CompareBattleExpGaugeCurrentToBoundary:
+	ld a, [wBattleExpGaugeCurrent]
+	cp [hl]
+	ret nz
+	inc hl
+	ld a, [wBattleExpGaugeCurrent + 1]
+	cp [hl]
+	ret nz
+	inc hl
+	ld a, [wBattleExpGaugeCurrent + 2]
+	cp [hl]
+	ret
+
+; Redraw the HUD, then animate from the previously rendered fill to the new one.
+RedrawPlayerHUDAndAnimateExpGauge:
+	call ReadBattleExpGaugeFill
+	push af
+	call DrawPlayerHUDAndHPBar
+	call ReadBattleExpGaugeFill
+	ld b, a
+	pop af
+	jp AnimateBattleExpGaugeToTarget
+
+; Complete the previous level's gauge before the level-up HUD redraw resets it.
+AnimatePlayerExpGaugeToFull:
+	call ReadBattleExpGaugeFill
+	ld b, 64
+	jp AnimateBattleExpGaugeToTarget
+
+; Return the current eight-tile gauge fill in a (0-64 pixels).
+ReadBattleExpGaugeFill:
+	xor a
+	ld d, a
+	ld c, 8
+	hlcoord 10, 10
+.readGaugeTile
+	ld a, [hli]
+	cp $6b ; full bar tile
+	jr z, .addFullTile
+	sub $63 ; empty or partial bar tile
+	cp 8
+	jr nc, .doneReadingGauge
+	add d
+	ld d, a
+	jr .nextReadGaugeTile
+.addFullTile
+	ld a, d
+	add 8
+	ld d, a
+.nextReadGaugeTile
+	dec c
+	jr nz, .readGaugeTile
+.doneReadingGauge
+	ld a, d
+	ret
+
+; Draw a bar with a pixels filled, using the battle HUD's existing bar tiles.
+DrawBattleExpGaugeFill:
 	ld b, a
 	ld c, 8
 	hlcoord 10, 10
@@ -2241,29 +2311,29 @@ DrawPlayerExpGauge:
 .nextGaugeTile
 	dec c
 	jr nz, .drawGaugeTile
-	ld hl, wBuffer + 20
-	ld b, 21
-.restoreGaugeScratch
-	pop af
-	ld [hld], a
-	dec b
-	jr nz, .restoreGaugeScratch
 	ret
 
-; Compare the active mon's current EXP with the 24-bit big-endian value at hl.
-; Returns the same carry/zero flags as a three-byte unsigned comparison.
-CompareBattleExpGaugeCurrentToBoundary:
-	ld a, [wBattleExpGaugeCurrent]
-	cp [hl]
-	ret nz
-	inc hl
-	ld a, [wBattleExpGaugeCurrent + 1]
-	cp [hl]
-	ret nz
-	inc hl
-	ld a, [wBattleExpGaugeCurrent + 2]
-	cp [hl]
-	ret
+
+; Animate one pixel per frame; no EXP values or battle calculation state change.
+AnimateBattleExpGaugeToTarget:
+	ld c, a
+	ld a, c
+	cp b
+	ret nc ; already at or beyond the target
+	ld a, 1
+	ldh [hAutoBGTransferEnabled], a
+.animateGauge
+	push bc
+	ld a, c
+	call DrawBattleExpGaugeFill
+	ld c, 1
+	call DelayFrames
+	pop bc
+	ld a, c
+	cp b
+	ret z
+	inc c
+	jr .animateGauge
 
 DrawEnemyHUDAndHPBar:
 	xor a
