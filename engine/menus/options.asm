@@ -445,7 +445,7 @@ OptionsControl:
 	scf
 	ret
 .doNotWrap
-	cp OPT_PRINTER ; skip the unused slot before Cancel
+	cp OPT_EXP_SHARE ; skip the unused slot before Cancel
 	jr c, .increase
 	ld [hl], OPT_CANCEL - 1 ; step past the unused slot to Cancel
 .increase
@@ -457,7 +457,7 @@ OptionsControl:
 	ld a, [hl]
 	cp OPT_CANCEL ; skip the unused slot before Cancel
 	jr nz, .doNotSkip
-	ld [hl], OPT_CANCEL - 1 ; EXP Share is before Cancel
+	ld [hl], OPT_EXP_SHARE ; EXP Share is before Cancel
 	scf
 	ret
 .doNotSkip
