@@ -11,6 +11,8 @@ IF DEF(_DEBUG)
 	call DebugPressedOrHeldB
 	ret nz
 ENDC
+	CheckEvent EVENT_SAFARI_UNLIMITED_MODE
+	jr nz, SafariZoneGameStillGoing
 	ld a, [wSafariSteps]
 	ld b, a
 	ld a, [wSafariSteps + 1]

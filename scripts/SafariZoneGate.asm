@@ -80,6 +80,7 @@ SafariZoneGateLeavingSafariScript:
 	CheckAndResetEvent EVENT_SAFARI_GAME_OVER
 	jr z, .leaving_early
 	ResetEventReuseHL EVENT_IN_SAFARI_ZONE
+	ResetEvent EVENT_SAFARI_UNLIMITED_MODE
 	call UpdateSprites
 	ld a, PAD_CTRL_PAD
 	ld [wJoyIgnore], a
@@ -168,6 +169,7 @@ SafariZoneGateSafariZoneWorker1LeavingEarlyText:
 	ld c, 3
 	call SafariZoneEntranceAutoWalk
 	ResetEvents EVENT_SAFARI_GAME_OVER, EVENT_IN_SAFARI_ZONE
+	ResetEvent EVENT_SAFARI_UNLIMITED_MODE
 	ld a, SCRIPT_SAFARIZONEGATE_DEFAULT
 	ld [wNextSafariZoneGateScript], a
 	jr .set_current_script

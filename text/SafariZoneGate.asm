@@ -24,13 +24,13 @@ _SafariZoneGateSafariZoneWorker1GoodHaulComeAgainText::
 	done
 
 _SafariZoneGateSafariZoneWorker1WouldYouLikeToJoinText::
-	text "For just ¥500,"
-	line "you can catch all"
-	cont "the #MON you"
-	cont "want in the park!"
+	text "¥500: 30 BALLS,"
+	line "500 steps."
 
-	para "Would you like to"
-	line "join the hunt?@"
+	para "¥1500: 100 BALLS,"
+	line "no step limit!"
+
+	para "Choose a mode.@"
 	text_end
 
 _SafariZoneGateSafariZoneWorker1ThatllBe500PleaseText::
@@ -41,10 +41,20 @@ _SafariZoneGateSafariZoneWorker1ThatllBe500PleaseText::
 
 	para "We only use a"
 	line "special # BALL"
-	cont "here."
+	cont "here.@"
+	text_end
 
+
+_SafariZoneGateSafariZoneWorker1Received30SafariBallsText::
+	text_start
 	para "<PLAYER> received"
 	line "30 SAFARI BALLs!@"
+	text_end
+
+_SafariZoneGateSafariZoneWorker1Received100SafariBallsText::
+	text_start
+	para "<PLAYER> received"
+	line "100 SAFARI BALLs!@"
 	text_end
 
 _SafariZoneGateSafariZoneWorker1CallYouOnThePAText::
@@ -54,6 +64,15 @@ _SafariZoneGateSafariZoneWorker1CallYouOnThePAText::
 	line "the PA when you"
 	cont "run out of time"
 	cont "or SAFARI BALLs!"
+	done
+
+_SafariZoneGateSafariZoneWorker1CallYouOnThePAUnlimitedText::
+	text_start
+
+	para "We'll call you on"
+	line "the PA when you"
+	cont "run out of SAFARI"
+	cont "BALLs!"
 	done
 
 _SafariZoneGateSafariZoneWorker1PleaseComeAgainText::

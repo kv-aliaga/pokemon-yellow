@@ -1697,6 +1697,7 @@ ItemUseEscapeRope:
 	ld hl, wStatusFlags4
 	res BIT_NO_BATTLES, [hl]
 	ResetEvent EVENT_IN_SAFARI_ZONE
+	ResetEvent EVENT_SAFARI_UNLIMITED_MODE
 	xor a
 	ld [wNumSafariBalls], a
 	ld [wSafariZoneGateCurScript], a ; SCRIPT_SAFARIZONEGATE_DEFAULT

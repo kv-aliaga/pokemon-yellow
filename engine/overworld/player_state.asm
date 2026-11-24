@@ -225,8 +225,10 @@ PrintSafariZoneSteps::
 	cp CERULEAN_CAVE_2F
 	ret nc
 	hlcoord 0, 0
-	lb bc, 3, 7
+	lb bc, 3, 9
 	call TextBoxBorder
+	CheckEvent EVENT_SAFARI_UNLIMITED_MODE
+	jr nz, .unlimitedSteps
 	hlcoord 1, 1
 	ld de, wSafariSteps
 	lb bc, 2, 3
@@ -234,26 +236,28 @@ PrintSafariZoneSteps::
 	hlcoord 4, 1
 	ld de, SafariSteps
 	call PlaceString
+	jr .printSafariBalls
+.unlimitedSteps
+	hlcoord 1, 1
+	ld de, SafariNoStepLimitText
+	call PlaceString
+.printSafariBalls
 	hlcoord 1, 3
 	ld de, SafariBallText
 	call PlaceString
-	ld a, [wNumSafariBalls]
-	cp 10
-	jr nc, .tenOrMore
-	hlcoord 5, 3
-	ld a, ' '
-	ld [hl], a
-.tenOrMore
 	hlcoord 6, 3
 	ld de, wNumSafariBalls
-	lb bc, 1, 2
+	lb bc, 1, 3
 	jp PrintNumber
 
 SafariSteps:
 	db "/500@"
 
+SafariNoStepLimitText:
+	db "--@"
+
 SafariBallText:
-	db "BALL×× @"
+	db "BALLS@"
 
 GetTileAndCoordsInFrontOfPlayer:
 	call GetPredefRegisters

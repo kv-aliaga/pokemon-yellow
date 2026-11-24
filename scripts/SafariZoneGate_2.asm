@@ -1,30 +1,40 @@
 SafariZoneGatePrintSafariZoneWorker1WouldYouLikeToJoinText::
+	ResetEvent EVENT_SAFARI_UNLIMITED_MODE
 	ld hl, .WelcomeText
 	call PrintText
 	ld a, MONEY_BOX
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
-	call YesNoChoice
-	ld a, [wCurrentMenuItem]
-	and a
+	call .DisplayAdmissionMenu
+	bit B_PAD_B, a
 	jp nz, .PleaseComeAgain
+	ld a, [wCurrentMenuItem]
+	cp 2 ; Leave
+	jp z, .PleaseComeAgain
 	ld hl, wPlayerMoney
 	ld a, [hli]
 	or [hl]
 	inc hl
 	or [hl]
-	jr nz, .has_positive_balance
+	jp nz, .has_positive_balance
 	call SafariZoneEntranceGetLowCostAdmissionText
-	jr c, .CantPayWalkDown
-	jr .poor_mans_discount
+	jp c, .CantPayWalkDown
+	jp .poor_mans_discount
 
 .has_positive_balance
 	xor a
+	ld [wPriceTemp], a
+	ld [wPriceTemp + 2], a
 	ldh [hMoney], a
-	ld a, $05
-	ldh [hMoney + 1], a
-	ld a, $00
 	ldh [hMoney + 2], a
+	ld a, [wCurrentMenuItem]
+	and a
+	ld a, $05
+	jr z, .storeAdmissionPrice
+	ld a, $15
+.storeAdmissionPrice
+	ld [wPriceTemp + 1], a
+	ldh [hMoney + 1], a
 	call HasEnoughMoney
 	jr nc, .success
 	ld hl, .NotEnoughMoneyText
@@ -34,12 +44,6 @@ SafariZoneGatePrintSafariZoneWorker1WouldYouLikeToJoinText::
 	jr .poor_mans_discount
 
 .success
-	xor a
-	ld [wPriceTemp], a
-	ld a, $05
-	ld [wPriceTemp + 1], a
-	ld a, $00
-	ld [wPriceTemp + 2], a
 	ld hl, wPriceTemp + 2
 	ld de, wPlayerMoney + 2
 	ld c, 3
@@ -50,9 +54,23 @@ SafariZoneGatePrintSafariZoneWorker1WouldYouLikeToJoinText::
 	ld a, MONEY_BOX
 	ld [wTextBoxID], a
 	call DisplayTextBoxID
+	ld a, [wPriceTemp + 1]
+	cp $15
 	ld hl, .MakePaymentText
+	jr nz, .printPaymentText
+	ld hl, .MakeUnlimitedPaymentText
+.printPaymentText
 	call PrintText
+	ld a, [wPriceTemp + 1]
+	cp $15
+	jr nz, .standardAdmission
+	SetEvent EVENT_SAFARI_UNLIMITED_MODE
+	ld a, 100
+	jr .setAdmissionBallCount
+.standardAdmission
+	ResetEvent EVENT_SAFARI_UNLIMITED_MODE
 	ld a, 30
+.setAdmissionBallCount
 	ld hl, 502
 .poor_mans_discount
 	ld [wNumSafariBalls], a
@@ -81,6 +99,38 @@ SafariZoneGatePrintSafariZoneWorker1WouldYouLikeToJoinText::
 .done
 	ret
 
+; Draw the admission choices above the dialogue window and use the standard
+; menu input handler so Up/Down, A, and B behave like other field menus.
+.DisplayAdmissionMenu:
+	xor a
+	ld [wCurrentMenuItem], a
+	ld [wLastMenuItem], a
+	ld a, PAD_A | PAD_B
+	ld [wMenuWatchedKeys], a
+	ld a, 2
+	ld [wMaxMenuItem], a
+	ld a, 7
+	ld [wTopMenuItemY], a
+	ld a, 1
+	ld [wTopMenuItemX], a
+	call SaveScreenTilesToBuffer1
+	ld hl, wStatusFlags5
+	set BIT_NO_TEXT_DELAY, [hl]
+	hlcoord 0, 5
+	lb bc, 6, 12
+	call TextBoxBorder
+	call UpdateSprites
+	hlcoord 2, 7
+	ld de, SafariZoneEntranceAdmissionMenuText
+	call PlaceString
+	ld hl, wStatusFlags5
+	res BIT_NO_TEXT_DELAY, [hl]
+	call HandleMenuInput
+	push af
+	call LoadScreenTilesFromBuffer1
+	pop af
+	ret
+
 .WelcomeText
 	text_far _SafariZoneGateSafariZoneWorker1WouldYouLikeToJoinText
 	text_end
@@ -88,7 +138,15 @@ SafariZoneGatePrintSafariZoneWorker1WouldYouLikeToJoinText::
 .MakePaymentText
 	text_far _SafariZoneGateSafariZoneWorker1ThatllBe500PleaseText
 	sound_get_item_1
+	text_far _SafariZoneGateSafariZoneWorker1Received30SafariBallsText
 	text_far _SafariZoneGateSafariZoneWorker1CallYouOnThePAText
+	text_end
+
+.MakeUnlimitedPaymentText
+	text_far _SafariZoneGateSafariZoneWorker1ThatllBe500PleaseText
+	sound_get_item_1
+	text_far _SafariZoneGateSafariZoneWorker1Received100SafariBallsText
+	text_far _SafariZoneGateSafariZoneWorker1CallYouOnThePAUnlimitedText
 	text_end
 
 .PleaseComeAgainText
@@ -250,3 +308,8 @@ SafariZoneEntranceConvertBCDtoNumber:
 	ld a, l
 	pop hl
 	ret
+
+SafariZoneEntranceAdmissionMenuText:
+	db "¥500"
+	next "¥1500"
+	next "Leave@"

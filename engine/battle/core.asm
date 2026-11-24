@@ -2161,7 +2161,7 @@ DisplayBattleMenu::
 	ldcoord_a 13, 16
 	hlcoord 7, 14
 	ld de, wNumSafariBalls
-	lb bc, 1, 2
+	lb bc, 1, 3
 	call PrintNumber
 	ld b, $1 ; top menu item X
 .leftColumn_WaitForInput
@@ -2194,7 +2194,7 @@ DisplayBattleMenu::
 	ldcoord_a 1, 16 ; clear lower cursor position in left column
 	hlcoord 7, 14
 	ld de, wNumSafariBalls
-	lb bc, 1, 2
+	lb bc, 1, 3
 	call PrintNumber
 	ld b, $d ; top menu item X
 .rightColumn_WaitForInput
