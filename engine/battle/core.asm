@@ -2331,9 +2331,13 @@ AnimateBattleExpGaugeToTarget:
 	pop bc
 	ld a, c
 	cp b
-	ret z
+	jr z, .gaugeFinished
 	inc c
 	jr .animateGauge
+.gaugeFinished
+	ld c, 30 ; hold the completed gauge for half a second before the next screen
+	call DelayFrames
+	ret
 
 DrawEnemyHUDAndHPBar:
 	xor a
