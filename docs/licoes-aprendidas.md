@@ -110,3 +110,31 @@ O jogador relatou que a bicicleta era mais lenta que correr segurando B. O avan�
 ### Evidência e limites
 
 A alteração para quatro avanços compilou nas builds normal e debug. Não foi feita medição comparativa em gameplay nesta sessão; portanto, não há evidência de que a bicicleta tenha alcançado ou superado a velocidade de corrida com B.
+
+## FAQ: por que as opções curtas deixaram letras de INSTANT na tela?
+
+### Sintoma e causa confirmada
+
+Ao alternar de `INSTANT` para uma opção mais curta, o jogador viu `SLOWANT`, `MID ANT` e `FASTANT`. `PlaceString` para de escrever quando encontra `@`, mas não apaga os tiles seguintes que já estavam na tela. As strings anteriores ocupavam menos caracteres que `INSTANT`, então o sufixo antigo permaneceu no tilemap. A build não detecta esse tipo de resíduo visual.
+
+### Inferências de layout
+
+A caixa de Options tem 20 colunas e a coluna de valor do Text Speed começa em x=12; assim, há sete células úteis (x=12–18) para o maior rótulo, antes da borda em x=19. Como não havia um contrato documentado para largura/limpeza desse campo nem uma decisão de layout para `INSTANT`, o valor foi movido para x=12 e o cabeçalho da linha foi encurtado para `SPEED:`. A primeira implementação criou `INSTANT@`, mas deixou `FAST`, `MID` e `SLOW` terminando logo após o texto visível. O erro foi a ausência de preenchimento/limpeza, não a codificação da opção.
+
+### Correção e prevenção
+
+As quatro strings agora ocupam sete células: `FAST   @`, `MID    @`, `SLOW   @` e `INSTANT@`. Para futuros rótulos dinâmicos com `PlaceString`, defina a largura do campo e preencha o restante com espaços ou limpe explicitamente todo o campo antes de desenhar. Verifique as transições do rótulo mais longo para cada rótulo curto e de volta; testar apenas a exibição isolada de cada string não revela tiles residuais.
+
+### Outro erro de fluxo encontrado na revisão: retorno Instant com registradores empilhados
+
+A primeira versão do retorno imediato para Instant ficou depois de `push hl`, `push de` e `push bc`. Esse caminho teria retornado sem restaurar a pilha, corrompendo o retorno ao chamador. A revisão de Spec encontrou o problema antes da conclusão; ele foi corrigido movendo os `push` para depois do guard e mantendo-os fora do loop de espera. Não há relato de execução dessa versão defeituosa no jogo.
+
+Ao adicionar retorno antecipado a `PrintLetterDelay` ou rotina semelhante, confirme a posição de cada `push` em relação a todos os retornos. Retorne antes de empilhar ou restaure os mesmos registradores em cada saída. Builds não verificam o balanceamento da pilha em caminhos que não executaram; a revisão deve conferir os caminhos de saída e um teste no debugger pode comparar SP/call stack ao imprimir várias letras com Instant.
+
+### Limite observado no build debug
+
+O primeiro link de `pokeyellow_debug.gbc` excedeu a seção fixa `Home` em 3 bytes (depois, em 1 byte ao simplificar o guard). A causa foi o espaço ROM0 apertado, que só ficou claro ao compilar o alvo debug. A checagem dos dois alvos deve ocorrer durante a implementação, não apenas ao final; em Pokémon Yellow, um build normal bem-sucedido não garante que o debug ROM ainda cabe. A sequência de teste e correção terminou com builds normal e debug bem-sucedidos.
+
+### Evidência e limites
+
+O relato do jogador e a implementação de `PlaceString` confirmam a causa dos sufixos. A correção com strings de largura fixa compilou nas duas ROMs, mas não foi observada em gameplay nesta sessão. Reabra Options, alterne repetidamente `INSTANT` ↔ `FAST`, `MID` e `SLOW`, e confira também as voltas esquerda/direita para validar visualmente o tilemap.

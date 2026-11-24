@@ -55,7 +55,8 @@ OptionMenuJumpTable:
 	const OPT_TEXT_SPEED_FAST ; 0
 	const OPT_TEXT_SPEED_MID  ; 1
 	const OPT_TEXT_SPEED_SLOW ; 2
-DEF NUM_TEXT_SPEED_OPTS EQU const_value ; 3
+	const OPT_TEXT_SPEED_INSTANT ; 3
+DEF NUM_TEXT_SPEED_OPTS EQU const_value ; 4
 
 OptionsMenu_TextSpeed:
 	call GetTextSpeed
@@ -100,7 +101,7 @@ OptionsMenu_TextSpeed:
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
-	hlcoord 14, 2
+	hlcoord 12, 2
 	call PlaceString
 	and a ; clear carry flag
 	ret
@@ -110,10 +111,12 @@ OptionsMenu_TextSpeed:
 	dw .Fast
 	dw .Mid
 	dw .Slow
+	dw .Instant
 
-.Fast: db "FAST@"
-.Mid:  db "MID @"
-.Slow: db "SLOW@"
+.Fast: db "FAST   @"
+.Mid:  db "MID    @"
+.Slow: db "SLOW   @"
+.Instant: db "INSTANT@"
 
 ; Loads the value of the current selection in c
 ; Loads the text delay value of the options
@@ -121,6 +124,8 @@ OptionsMenu_TextSpeed:
 GetTextSpeed:
 	ld a, [wOptions]
 	and TEXT_DELAY_MASK
+	cp TEXT_DELAY_INSTANT
+	jr z, .instantTextOption
 	cp TEXT_DELAY_SLOW
 	jr z, .slowTextOption
 	cp TEXT_DELAY_FAST
@@ -129,14 +134,19 @@ GetTextSpeed:
 	lb de, TEXT_DELAY_FAST, TEXT_DELAY_SLOW
 	ret
 
+.instantTextOption
+	ld c, OPT_TEXT_SPEED_INSTANT
+	lb de, TEXT_DELAY_SLOW, TEXT_DELAY_FAST
+	ret
+
 .slowTextOption
 	ld c, OPT_TEXT_SPEED_SLOW
-	lb de, TEXT_DELAY_MEDIUM, TEXT_DELAY_FAST
+	lb de, TEXT_DELAY_MEDIUM, TEXT_DELAY_INSTANT
 	ret
 
 .fastTextOption
 	ld c, OPT_TEXT_SPEED_FAST
-	lb de, TEXT_DELAY_SLOW, TEXT_DELAY_MEDIUM
+	lb de, TEXT_DELAY_INSTANT, TEXT_DELAY_MEDIUM
 	ret
 
 OptionsMenu_BattleAnimations:
@@ -473,7 +483,7 @@ InitOptionsMenu:
 	ret
 
 AllOptionsText:
-	db   "TEXT SPEED :"
+	db   "SPEED:"
 	next "ANIMATION  :"
 	next "BATTLESTYLE:"
 	next "SOUND:"
