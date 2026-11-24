@@ -159,7 +159,28 @@ GainExperience:
 	pop hl
 	ld a, [hl] ; current level
 	cp d
-	jp z, .nextMon ; if level didn't change, go to next mon
+	jr nz, .levelChanged
+	ld a, [wWhichPokemon]
+	ld b, a
+	ld a, [wPlayerMonNumber]
+	cp b ; is this the active battle mon?
+	jp nz, .nextMon
+	ld hl, RedrawPlayerHUDAndAnimateExpGauge
+	call CallBattleCore ; animate the gauge after an active mon's EXP gain
+	jp .nextMon
+.levelChanged
+	ld a, [wWhichPokemon]
+	ld b, a
+	ld a, [wPlayerMonNumber]
+	cp b ; is this the active battle mon?
+	jr nz, .setNewLevel
+	push de ; preserve the new level returned in d
+	push hl
+	ld hl, AnimatePlayerExpGaugeToFull
+	call CallBattleCore ; fill the current level's gauge before it resets
+	pop hl
+	pop de
+.setNewLevel
 	ld a, [wCurEnemyLevel]
 	push af
 	push hl
