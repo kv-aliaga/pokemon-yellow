@@ -2069,42 +2069,13 @@ DrawPlayerExpGauge:
 	ld [wCurSpecies], a
 
 ; If EXP has already reached the next threshold, show a full bar.
-	ld a, [wBattleExpGaugeCurrent]
-	ld b, a
-	ld a, [wBattleExpGaugeLower]
-	cp b
-	jr c, .checkCurrentExpUpper
-	jp nz, .emptyGauge
-	ld a, [wBattleExpGaugeCurrent + 1]
-	ld b, a
-	ld a, [wBattleExpGaugeLower + 1]
-	cp b
-	jr c, .checkCurrentExpUpper
-	jp nz, .emptyGauge
-	ld a, [wBattleExpGaugeCurrent + 2]
-	ld b, a
-	ld a, [wBattleExpGaugeLower + 2]
-	cp b
-	jr c, .checkCurrentExpUpper
-	jp nz, .emptyGauge
-.checkCurrentExpUpper
-	ld a, [wBattleExpGaugeCurrent]
-	ld b, a
-	ld a, [wBattleExpGaugeUpper]
-	cp b
-	jp c, .fullGauge
-	jp nz, .calculateProgress
-	ld a, [wBattleExpGaugeCurrent + 1]
-	ld b, a
-	ld a, [wBattleExpGaugeUpper + 1]
-	cp b
-	jp c, .fullGauge
-	jp nz, .calculateProgress
-	ld a, [wBattleExpGaugeCurrent + 2]
-	ld b, a
-	ld a, [wBattleExpGaugeUpper + 2]
-	cp b
-	jp c, .fullGauge
+	ld hl, wBattleExpGaugeLower
+	call CompareBattleExpGaugeCurrentToBoundary
+	jp c, .emptyGauge
+	ld hl, wBattleExpGaugeUpper
+	call CompareBattleExpGaugeCurrentToBoundary
+	jp c, .calculateProgress
+	jp .fullGauge
 
 .calculateProgress
 	ld a, [wBattleExpGaugeCurrent + 2]
@@ -2280,6 +2251,21 @@ DrawPlayerExpGauge:
 	ld [hld], a
 	dec b
 	jr nz, .restoreGaugeScratch
+	ret
+
+; Compare the active mon's current EXP with the 24-bit big-endian value at hl.
+; Returns the same carry/zero flags as a three-byte unsigned comparison.
+CompareBattleExpGaugeCurrentToBoundary:
+	ld a, [wBattleExpGaugeCurrent]
+	cp [hl]
+	ret nz
+	inc hl
+	ld a, [wBattleExpGaugeCurrent + 1]
+	cp [hl]
+	ret nz
+	inc hl
+	ld a, [wBattleExpGaugeCurrent + 2]
+	cp [hl]
 	ret
 
 ExpGaugeLabel:
