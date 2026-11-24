@@ -46,15 +46,3 @@ _NameRatersHouseNameRaterComeAnyTimeYouLikeText::
 	text "Fine! Come any-"
 	line "time you like!"
 	done
-
-_NameRatersHouseNameRaterATrulyImpeccableNameText::
-	text_ram wNameBuffer
-	text ", is it?"
-	line "That is a truly"
-	cont "impeccable name!"
-
-	para "Take good care of"
-	line "@"
-	text_ram wNameBuffer
-	text "!"
-	done
