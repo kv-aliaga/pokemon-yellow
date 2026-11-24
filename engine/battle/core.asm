@@ -1921,6 +1921,7 @@ DrawPlayerHUDAndHPBar:
 	ld [wCurPartySpecies], a
 	hlcoord 10, 9
 	predef DrawHP
+	call DrawPlayerExpGauge
 	ld a, $1
 	ldh [hAutoBGTransferEnabled], a
 	ld hl, wPlayerHPBarColor
@@ -1947,6 +1948,342 @@ DrawPlayerHUDAndHPBar:
 	ld hl, wLowHealthAlarm
 	set BIT_LOW_HEALTH_ALARM, [hl]
 	ret
+
+; Draw the active party mon's progress toward the next level. The battle mon
+; struct has no EXP field, so use the party entry selected by wPlayerMonNumber.
+DrawPlayerExpGauge:
+	ld a, [wPlayerMonNumber]
+	ld bc, PARTYMON_STRUCT_LENGTH
+	ld hl, wPartyMon1Level
+	call AddNTimes
+	ld a, [hl]
+	cp MAX_LEVEL
+	ret nc ; level 100 has no next level; the cleared HUD row stays empty
+	ld hl, wBuffer
+	ld b, 21
+.saveGaugeScratch
+	ld a, [hli]
+	push af
+	dec b
+	jr nz, .saveGaugeScratch
+
+	ld a, [wPlayerMonNumber]
+	ld bc, PARTYMON_STRUCT_LENGTH
+	ld hl, wPartyMon1Exp
+	call AddNTimes
+	ld de, wBattleExpGaugeCurrent
+	ld bc, 3
+	call CopyData
+	ld a, [wPlayerMonNumber]
+	ld bc, PARTYMON_STRUCT_LENGTH
+	ld hl, wPartyMon1Level
+	call AddNTimes
+	ld a, [hl]
+	ld [wBattleExpGaugeLevel], a
+
+	ld a, [wCurSpecies]
+	push af
+	ld hl, wMonHeader
+	ld b, wMonHeaderEnd - wMonHeader
+.saveMonHeader
+	ld a, [hli]
+	push af
+	dec b
+	jr nz, .saveMonHeader
+
+	ld a, [wPlayerMonNumber]
+	ld c, a
+	ld b, 0
+	ld hl, wPartySpecies
+	add hl, bc
+	ld a, [hl]
+	ld [wCurSpecies], a
+	call GetMonHeader
+	; CalcExperience shares the ten-byte multiplication/division HRAM workspace
+	; with battle calculations. Save the whole union across both calls.
+	ldh a, [hMultiplicand - 1]
+	push af
+	ldh a, [hMultiplicand]
+	push af
+	ldh a, [hMultiplicand + 1]
+	push af
+	ldh a, [hMultiplicand + 2]
+	push af
+	ldh a, [hMultiplier]
+	push af
+	ldh a, [hDivideBuffer]
+	push af
+	ldh a, [hMultiplyBuffer]
+	push af
+	ldh a, [hMultiplyBuffer + 1]
+	push af
+	ldh a, [hMultiplyBuffer + 2]
+	push af
+	ldh a, [hMultiplyBuffer + 3]
+	push af
+	ld a, [wBattleExpGaugeLevel]
+	ld d, a
+	callfar CalcExperience
+	ld hl, hExperience
+	ld de, wBattleExpGaugeLower
+	ld bc, 3
+	call CopyData
+	ld a, [wBattleExpGaugeLevel]
+	inc a
+	ld d, a
+	callfar CalcExperience
+	ld hl, hExperience
+	ld de, wBattleExpGaugeUpper
+	ld bc, 3
+	call CopyData
+	pop af
+	ldh [hMultiplyBuffer + 3], a
+	pop af
+	ldh [hMultiplyBuffer + 2], a
+	pop af
+	ldh [hMultiplyBuffer + 1], a
+	pop af
+	ldh [hMultiplyBuffer], a
+	pop af
+	ldh [hDivideBuffer], a
+	pop af
+	ldh [hMultiplier], a
+	pop af
+	ldh [hMultiplicand + 2], a
+	pop af
+	ldh [hMultiplicand + 1], a
+	pop af
+	ldh [hMultiplicand], a
+	pop af
+	ldh [hMultiplicand - 1], a
+
+; Restore the mon header and current species; battle callers may rely on them.
+	ld hl, wMonHeaderEnd - 1
+	ld b, wMonHeaderEnd - wMonHeader
+.restoreMonHeader
+	pop af
+	ld [hld], a
+	dec b
+	jr nz, .restoreMonHeader
+	pop af
+	ld [wCurSpecies], a
+
+; If EXP has already reached the next threshold, show a full bar.
+	ld a, [wBattleExpGaugeCurrent]
+	ld b, a
+	ld a, [wBattleExpGaugeLower]
+	cp b
+	jr c, .checkCurrentExpUpper
+	jp nz, .emptyGauge
+	ld a, [wBattleExpGaugeCurrent + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeLower + 1]
+	cp b
+	jr c, .checkCurrentExpUpper
+	jp nz, .emptyGauge
+	ld a, [wBattleExpGaugeCurrent + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeLower + 2]
+	cp b
+	jr c, .checkCurrentExpUpper
+	jp nz, .emptyGauge
+.checkCurrentExpUpper
+	ld a, [wBattleExpGaugeCurrent]
+	ld b, a
+	ld a, [wBattleExpGaugeUpper]
+	cp b
+	jp c, .fullGauge
+	jp nz, .calculateProgress
+	ld a, [wBattleExpGaugeCurrent + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeUpper + 1]
+	cp b
+	jp c, .fullGauge
+	jp nz, .calculateProgress
+	ld a, [wBattleExpGaugeCurrent + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeUpper + 2]
+	cp b
+	jp c, .fullGauge
+
+.calculateProgress
+	ld a, [wBattleExpGaugeCurrent + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeLower + 2]
+	ld c, a
+	ld a, b
+	sub c
+	ld [wBattleExpGaugeProgress + 2], a
+	ld a, [wBattleExpGaugeCurrent + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeLower + 1]
+	ld c, a
+	ld a, b
+	sbc c
+	ld [wBattleExpGaugeProgress + 1], a
+	ld a, [wBattleExpGaugeCurrent]
+	ld b, a
+	ld a, [wBattleExpGaugeLower]
+	ld c, a
+	ld a, b
+	sbc c
+	ld [wBattleExpGaugeProgress], a
+
+; Range = upper - lower. EXP thresholds are big-endian 24-bit values.
+	ld a, [wBattleExpGaugeUpper + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeLower + 2]
+	ld c, a
+	ld a, b
+	sub c
+	ld [wBattleExpGaugeRange + 2], a
+	ld a, [wBattleExpGaugeUpper + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeLower + 1]
+	ld c, a
+	ld a, b
+	sbc c
+	ld [wBattleExpGaugeRange + 1], a
+	ld a, [wBattleExpGaugeUpper]
+	ld b, a
+	ld a, [wBattleExpGaugeLower]
+	ld c, a
+	ld a, b
+	sbc c
+	ld [wBattleExpGaugeRange], a
+	ld a, [wBattleExpGaugeRange]
+	ld b, a
+	ld a, [wBattleExpGaugeRange + 1]
+	or b
+	ld b, a
+	ld a, [wBattleExpGaugeRange + 2]
+	or b
+	jp z, .emptyGauge
+
+; Repeated addition modulo the range computes floor(progress * 40 / range).
+	xor a
+	ld [wBattleExpGaugeAccumulator], a
+	ld [wBattleExpGaugeAccumulator + 1], a
+	ld [wBattleExpGaugeAccumulator + 2], a
+	ld [wBattleExpGaugeFilled], a
+	ld a, 40
+	ld [wBattleExpGaugeIterations], a
+.fillPixels
+	ld a, [wBattleExpGaugeAccumulator + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeProgress + 2]
+	add b
+	ld [wBattleExpGaugeAccumulator + 2], a
+	ld a, [wBattleExpGaugeAccumulator + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeProgress + 1]
+	adc b
+	ld [wBattleExpGaugeAccumulator + 1], a
+	ld a, [wBattleExpGaugeAccumulator]
+	ld b, a
+	ld a, [wBattleExpGaugeProgress]
+	adc b
+	ld [wBattleExpGaugeAccumulator], a
+
+	ld a, [wBattleExpGaugeAccumulator]
+	ld b, a
+	ld a, [wBattleExpGaugeRange]
+	cp b
+	jr c, .subtractRange
+	jr nz, .nextPixel
+	ld a, [wBattleExpGaugeAccumulator + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeRange + 1]
+	cp b
+	jr c, .subtractRange
+	jr nz, .nextPixel
+	ld a, [wBattleExpGaugeAccumulator + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeRange + 2]
+	cp b
+	jr c, .subtractRange
+	jr nz, .nextPixel
+.subtractRange
+	ld a, [wBattleExpGaugeAccumulator + 2]
+	ld b, a
+	ld a, [wBattleExpGaugeRange + 2]
+	ld c, a
+	ld a, b
+	sub c
+	ld [wBattleExpGaugeAccumulator + 2], a
+	ld a, [wBattleExpGaugeAccumulator + 1]
+	ld b, a
+	ld a, [wBattleExpGaugeRange + 1]
+	ld c, a
+	ld a, b
+	sbc c
+	ld [wBattleExpGaugeAccumulator + 1], a
+	ld a, [wBattleExpGaugeAccumulator]
+	ld b, a
+	ld a, [wBattleExpGaugeRange]
+	ld c, a
+	ld a, b
+	sbc c
+	ld [wBattleExpGaugeAccumulator], a
+	ld hl, wBattleExpGaugeFilled
+	inc [hl]
+.nextPixel
+	ld hl, wBattleExpGaugeIterations
+	dec [hl]
+	jr nz, .fillPixels
+	jr .drawGauge
+
+.fullGauge
+	ld a, 40
+	ld [wBattleExpGaugeFilled], a
+	jr .drawGauge
+.emptyGauge
+	xor a
+	ld [wBattleExpGaugeFilled], a
+.drawGauge
+	hlcoord 10, 10
+	ld de, ExpGaugeLabel
+	call PlaceString
+	ld a, [wBattleExpGaugeFilled]
+	ld b, a
+	ld c, 5
+	hlcoord 13, 10
+.drawGaugeTile
+	ld a, b
+	cp 8
+	jr c, .partialGaugeTile
+	ld a, $6b ; full bar tile
+	ld [hli], a
+	ld a, b
+	sub 8
+	ld b, a
+	jr .nextGaugeTile
+.partialGaugeTile
+	ld a, b
+	and a
+	jr z, .emptyGaugeTile
+	add $63 ; partial bar tile
+	ld [hli], a
+	xor a
+	ld b, a
+	jr .nextGaugeTile
+.emptyGaugeTile
+	ld a, $63 ; empty bar tile
+	ld [hli], a
+.nextGaugeTile
+	dec c
+	jr nz, .drawGaugeTile
+	ld hl, wBuffer + 20
+	ld b, 21
+.restoreGaugeScratch
+	pop af
+	ld [hld], a
+	dec b
+	jr nz, .restoreGaugeScratch
+	ret
+
+ExpGaugeLabel:
+	db "EXP@"
 
 DrawEnemyHUDAndHPBar:
 	xor a

@@ -1151,6 +1151,17 @@ wLearningMovesFromDayCare::
 ; the item that the AI used
 wAIItem:: db
 wUsedItemOnWhichPokemon:: db
+NEXTU
+; Temporary progress values for the battle EXP gauge, saved/restored in place.
+wBattleExpGaugeCurrent:: ds 3
+wBattleExpGaugeLower:: ds 3
+wBattleExpGaugeUpper:: ds 3
+wBattleExpGaugeProgress:: ds 3
+wBattleExpGaugeRange:: ds 3
+wBattleExpGaugeAccumulator:: ds 3
+wBattleExpGaugeLevel:: db
+wBattleExpGaugeFilled:: db
+wBattleExpGaugeIterations:: db
 ENDU
 
 ; sound ID during battle animations
