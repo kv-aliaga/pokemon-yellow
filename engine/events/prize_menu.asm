@@ -33,7 +33,9 @@ CeladonPrizeMenu::
 	bit B_PAD_B, a
 	jr nz, .noChoice
 	ld a, [wCurrentMenuItem]
-	cp 3 ; "NO,THANKS" choice
+	ld b, a
+	ld a, [wMaxMenuItem]
+	cp b ; "NO,THANKS" is the last menu item
 	jr z, .noChoice
 	call HandlePrizeChoice
 .noChoice
@@ -86,6 +88,8 @@ GetPrizeMenuId:
 	ld a, [wWhichPrizeWindow]
 	cp 2 ; is TM_menu?
 	jr nz, .putMonName
+	ld a, 2 ; two TM prizes plus "NO THANKS"
+	ld [wMaxMenuItem], a
 	ld a, [wPrize1]
 	ld [wNamedObjectIndex], a
 	call GetItemName
@@ -96,12 +100,17 @@ GetPrizeMenuId:
 	call GetItemName
 	hlcoord 2, 6
 	call PlaceString
-	ld a, [wPrize3]
-	ld [wNamedObjectIndex], a
-	call GetItemName
 	hlcoord 2, 8
+	ld de, NoThanksText
 	call PlaceString
-	jr .putNoThanksText
+	ld de, wPrize1Price
+	hlcoord 13, 5
+	ld c, 2 | LEADING_ZEROES
+	call PrintBCDNumber
+	ld de, wPrize2Price
+	hlcoord 13, 7
+	ld c, 2 | LEADING_ZEROES
+	jp PrintBCDNumber
 .putMonName
 	ld a, [wPrize1]
 	ld [wNamedObjectIndex], a

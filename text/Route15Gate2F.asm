@@ -1,18 +1,7 @@
-_Route15Gate2FOaksAideExpAllText::
-	text "EXP.ALL gives"
-	line "EXP points to all"
-	cont "the #MON with"
-	cont "you, even if they"
-	cont "don't fight."
-
-	para "It does, however,"
-	line "reduce the amount"
-	cont "of EXP for each"
-	cont "#MON."
-
-	para "If you don't need"
-	line "it, you should "
-	cont "store it via PC."
+_Route15Gate2FOaksAideHyperBeamText::
+	text "TM15 contains"
+	line "the move HYPER"
+	cont "BEAM."
 	done
 
 _Route15Gate2FBinocularsText::
