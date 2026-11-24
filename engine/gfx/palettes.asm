@@ -775,6 +775,12 @@ InitCGBPalettes:
 		call TransferCurOBPData
 	ENDR
 
+	ld de, CGBBasePalettes + PAL_BLUEBAR * PAL_SIZE
+	xor a ; CONVERT_BGP
+	call DMGPalToCGBPal
+	ld a, 4
+	call TransferCurBGPData
+
 	ret
 
 GetCGBBasePalAddress::
@@ -986,6 +992,11 @@ _UpdateCGBPal_BGP::
 	ENDR
 
 	call TransferBGPPals
+	ld de, CGBBasePalettes + PAL_BLUEBAR * PAL_SIZE
+	xor a ; CONVERT_BGP
+	call DMGPalToCGBPal
+	ld a, 4
+	call TransferCurBGPData
 	ret
 
 _UpdateCGBPal_OBP::
