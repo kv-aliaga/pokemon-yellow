@@ -95,7 +95,15 @@ RedrawPartyMenu_::
 	ld de, .ableToLearnMoveText
 	ld a, c
 	and a
-	jr nz, .placeMoveLearnabilityString
+	jr z, .notAbleToLearnMove
+	push hl
+	callfar IsMoveKnownByPartyMon
+	pop hl
+	ld de, .alreadyKnowsMoveText
+	jr c, .placeMoveLearnabilityString
+	ld de, .ableToLearnMoveText
+	jr .placeMoveLearnabilityString
+.notAbleToLearnMove
 	ld de, .notAbleToLearnMoveText
 .placeMoveLearnabilityString
 	push hl
@@ -117,6 +125,8 @@ RedrawPartyMenu_::
 	jp .loop
 .ableToLearnMoveText
 	db "ABLE@"
+.alreadyKnowsMoveText
+	db "KNOWN@"
 .notAbleToLearnMoveText
 	db "NOT ABLE@"
 .evolutionStoneMenu
