@@ -2567,8 +2567,9 @@ ItemUseTMHM:
 
 	ld a, [wCurItem]
 	call IsItemHM
-	ret c
-	jp RemoveUsedItem
+	ret c ; HMs are key items and remain reusable.
+; A successfully taught TM also remains in the Bag.
+	ret
 
 BootedUpTMText:
 	text_far _BootedUpTMText
