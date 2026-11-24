@@ -2131,13 +2131,13 @@ DrawPlayerExpGauge:
 	or b
 	jp z, .emptyGauge
 
-; Repeated addition modulo the range computes floor(progress * 40 / range).
+; Repeated addition modulo the range computes floor(progress * 64 / range).
 	xor a
 	ld [wBattleExpGaugeAccumulator], a
 	ld [wBattleExpGaugeAccumulator + 1], a
 	ld [wBattleExpGaugeAccumulator + 2], a
 	ld [wBattleExpGaugeFilled], a
-	ld a, 40
+	ld a, 64
 	ld [wBattleExpGaugeIterations], a
 .fillPixels
 	ld a, [wBattleExpGaugeAccumulator + 2]
@@ -2205,20 +2205,17 @@ DrawPlayerExpGauge:
 	jr .drawGauge
 
 .fullGauge
-	ld a, 40
+	ld a, 64
 	ld [wBattleExpGaugeFilled], a
 	jr .drawGauge
 .emptyGauge
 	xor a
 	ld [wBattleExpGaugeFilled], a
 .drawGauge
-	hlcoord 10, 10
-	ld de, ExpGaugeLabel
-	call PlaceString
 	ld a, [wBattleExpGaugeFilled]
 	ld b, a
-	ld c, 5
-	hlcoord 13, 10
+	ld c, 8
+	hlcoord 10, 10
 .drawGaugeTile
 	ld a, b
 	cp 8
@@ -2267,9 +2264,6 @@ CompareBattleExpGaugeCurrentToBoundary:
 	ld a, [wBattleExpGaugeCurrent + 2]
 	cp [hl]
 	ret
-
-ExpGaugeLabel:
-	db "EXP@"
 
 DrawEnemyHUDAndHPBar:
 	xor a
