@@ -1260,9 +1260,10 @@ _GainedText::
 	line "@"
 	text_end
 
-_WithExpAllText::
-	text "with EXP.ALL,"
-	cont "@"
+_ExpShareText::
+	text "The remaining EXP"
+	line "was shared thanks"
+	cont "to EXP SHARE!@"
 	text_end
 
 _BoostedText::

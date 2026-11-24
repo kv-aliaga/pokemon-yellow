@@ -551,8 +551,7 @@ NEXTU
 wSimulatedJoypadStatesEnd::
 
 NEXTU
-wUnusedFlag::
-wBoostExpByExpAll:: db
+wUnusedFlag:: db
 
 	ds 59
 

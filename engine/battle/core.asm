@@ -823,7 +823,11 @@ FaintEnemyPokemon:
 	call PrintEmptyString
 	call SaveScreenTilesToBuffer1
 	xor a
+	ld [wExpShareNonParticipants], a
 	ld [wBattleResult], a
+	ld a, [wLinkState]
+	cp LINK_STATE_BATTLING
+	jr z, .giveExpToMonsThatFought ; link battles award no EXP and show no EXP Share text
 	ld a, [wOptions]
 	bit BIT_EXP_SHARE, a
 	jr z, .giveExpToMonsThatFought
@@ -838,8 +842,6 @@ FaintEnemyPokemon:
 	ld [wExpShareHalfBaseExp], a
 	ld [wEnemyMonBaseExp], a
 .giveExpToMonsThatFought
-	xor a
-	ld [wBoostExpByExpAll], a
 	callfar GainExperience
 	ld a, [wOptions]
 	bit BIT_EXP_SHARE, a
@@ -861,6 +863,7 @@ FaintEnemyPokemon:
 	jr nz, .clearStatsLoop
 	ld a, [wExpShareNonParticipants]
 	ld [wPartyGainExpFlags], a
+	callfar PrintExpShareText
 	callfar GainExperience
 	ret
 
@@ -1808,7 +1811,6 @@ SendOutMon:
 	ld hl, wBattleAndStartSavedMenuItem
 	ld [hli], a
 	ld [hl], a
-	ld [wBoostExpByExpAll], a
 	ld [wDamageMultipliers], a
 	ld [wPlayerMoveNum], a
 	ld hl, wPlayerUsedMove

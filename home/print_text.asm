@@ -12,7 +12,7 @@ PrintLetterDelay::
 	bit BIT_FAST_TEXT_DELAY, a
 	jr z, .waitOneFrame
 	ld a, [wOptions]
-	and $f
+	and TEXT_DELAY_MASK
 	ret z
 	ldh [hFrameCounter], a
 	jr .checkButtons
