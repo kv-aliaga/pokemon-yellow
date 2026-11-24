@@ -1,5 +1,14 @@
 ; checks if the mon in [wWhichPokemon] already knows the move in [wMoveNum]
 CheckIfMoveIsKnown:
+	call IsMoveKnownByPartyMon
+	ret nc
+	ld hl, AlreadyKnowsText
+	call PrintText
+	scf
+	ret
+
+; sets carry if the mon in [wWhichPokemon] knows the move in [wMoveNum]
+IsMoveKnownByPartyMon:
 	ld a, [wWhichPokemon]
 	ld hl, wPartyMon1Moves
 	ld bc, PARTYMON_STRUCT_LENGTH
@@ -16,8 +25,6 @@ CheckIfMoveIsKnown:
 	and a
 	ret
 .alreadyKnown
-	ld hl, AlreadyKnowsText
-	call PrintText
 	scf
 	ret
 
